@@ -79,24 +79,24 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b border-black/[0.04] bg-white/80 backdrop-blur-xl ${
+      className={`sticky top-0 z-40 border-b border-[#dadce0]/60 bg-white/95 backdrop-blur-md ${
         hideOnMobileHome ? "hidden md:block" : ""
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center px-2 md:h-[4.5rem] md:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center px-4 md:h-18 md:px-6">
         <button
           type="button"
-          className="flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface md:hidden"
+          className="flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4] md:hidden"
           aria-label="Menu"
           onClick={() => setMenuPath(pathname)}
         >
-          <Menu className="size-6" />
+          <Menu className="size-5" />
         </button>
-        <Link href="/" className="ml-1 md:ml-0" aria-label="Fzmobile home">
+        <Link href="/" className="ml-1 flex items-center md:ml-0" aria-label="Fzmobile home">
           <Image src="/brand/logo-black.svg" alt="" width={118} height={32} priority unoptimized />
         </Link>
 
-        <nav className="ml-10 hidden items-center gap-7 md:flex">
+        <nav className="ml-8 hidden items-center gap-1.5 md:flex">
           {desktopNav.map((link) => {
             const pathOnly = link.href.split("?")[0];
             const isActive =
@@ -109,8 +109,10 @@ export function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-semibold transition-colors duration-200 ${
-                  isActive ? "text-deep" : "text-black/70 hover:text-deep"
+                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#e8f0fe] font-semibold text-[#1a73e8]"
+                    : "text-[#5f6368] hover:bg-[#f8f9fa] hover:text-[#1a73e8]"
                 }`}
               >
                 {link.label}
@@ -119,10 +121,10 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <button
             type="button"
-            className="flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4]"
             aria-label="Search"
             onClick={openSearch}
           >
@@ -130,21 +132,21 @@ export function SiteHeader() {
           </button>
           <a
             href={whatsappHref()}
-            className="hidden size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface sm:flex"
+            className="hidden size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4] sm:flex"
             aria-label="WhatsApp support"
             target="_blank"
             rel="noreferrer"
           >
-            <WhatsAppIcon className="size-5" />
+            <WhatsAppIcon className="size-5 text-[#5f6368]" />
           </a>
           <Link
             href="/cart"
-            className="relative flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface"
+            className="relative flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4]"
             aria-label={count > 0 ? `Cart, ${count} ${count === 1 ? "item" : "items"}` : "Cart"}
           >
             <ShoppingBag className="size-5" />
             {count > 0 && (
-              <span className="absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-deep px-1 text-[10px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1a73e8] px-1.5 text-[10px] font-semibold text-white">
                 {count}
               </span>
             )}
@@ -153,68 +155,82 @@ export function SiteHeader() {
       </div>
 
       <Sheet open={menuOpen} title="Menu" onClose={closeMenu}>
-        <nav className="flex flex-col pb-4">
-          <p className="pb-2 text-xs font-bold uppercase tracking-[0.14em] text-muted">Shop</p>
-          {shopLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={closeMenu}
-              className={`flex h-12 items-center border-t border-line text-base ${
-                "strong" in link && link.strong ? "font-bold" : ""
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-
-          <p className="mt-6 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-muted">
-            Support
+        <nav className="flex flex-col py-2">
+          <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
+            Shop
           </p>
-          {supportLinks.map((link) =>
-            "external" in link && link.external ? (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={closeMenu}
-                className="flex h-12 items-center border-t border-line text-base"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {link.label}
-              </a>
-            ) : (
+          <div className="flex flex-col gap-0.5">
+            {shopLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className={`flex h-12 items-center border-t border-line text-base ${
-                  "strong" in link && link.strong ? "font-bold" : ""
+                className={`flex h-11 items-center rounded-xl px-3 text-sm transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8] ${
+                  "strong" in link && link.strong
+                    ? "font-semibold text-[#202124]"
+                    : "font-normal text-[#5f6368]"
                 }`}
               >
                 {link.label}
               </Link>
-            ),
-          )}
+            ))}
+          </div>
 
-          <p className="mt-6 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-muted">
+          <p className="mt-5 px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
+            Support
+          </p>
+          <div className="flex flex-col gap-0.5">
+            {supportLinks.map((link) =>
+              "external" in link && link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className="flex h-11 items-center rounded-xl px-3 text-sm font-normal text-[#5f6368] transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8]"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className={`flex h-11 items-center rounded-xl px-3 text-sm transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8] ${
+                    "strong" in link && link.strong
+                      ? "font-semibold text-[#202124]"
+                      : "font-normal text-[#5f6368]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
+          </div>
+
+          <p className="mt-5 px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
             Policies
           </p>
-          {policyLinks.map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={closeMenu}
-              className="flex h-11 items-center border-t border-line text-sm text-muted"
-            >
-              {label}
-            </Link>
-          ))}
+          <div className="flex flex-wrap gap-2 px-3 pt-1">
+            {policyLinks.map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={closeMenu}
+                className="rounded-full bg-[#f8f9fa] px-3.5 py-1.5 text-xs text-[#5f6368] transition-colors hover:bg-[#e8f0fe] hover:text-[#1a73e8]"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </nav>
       </Sheet>
 
       <Sheet open={searchOpen} title="Search" onClose={() => setSearchPath(null)}>
-        <SearchPill autoFocus />
+        <div className="py-2">
+          <SearchPill autoFocus />
+        </div>
       </Sheet>
     </header>
   );

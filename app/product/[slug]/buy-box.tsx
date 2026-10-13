@@ -4,11 +4,11 @@ import { ConditionChip } from "@/components/condition-chip";
 import { ProductMedia } from "@/components/product-media";
 import { Sheet } from "@/components/sheet";
 import { conditionMeta } from "@/lib/catalog";
-import { cn, naira } from "@/lib/format";
+import { naira } from "@/lib/format";
 import { productImage } from "@/lib/media";
 import { useStore } from "@/lib/store";
 import type { Condition, Product, Variant } from "@/lib/types";
-import { ArrowLeft, Minus, Plus, Share2, ShoppingBag, Star } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Share2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -107,33 +107,33 @@ export function BuyBox({
   }
 
   return (
-    <div className="mx-auto max-w-lg pb-28 md:max-w-6xl md:pb-10">
-      <div className="sticky top-0 z-20 flex h-14 items-center justify-between bg-white/80 px-3 backdrop-blur-xl md:hidden">
+    <div className="mx-auto max-w-lg bg-white pb-28 md:max-w-6xl md:pb-12">
+      <div className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[#dadce0]/80 bg-white/90 px-3 backdrop-blur-xl md:hidden">
         <button
           type="button"
           aria-label="Back"
           onClick={() => router.back()}
-          className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-surface"
+          className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-white text-[#202124] shadow-xs"
         >
-          <ArrowLeft className="size-5" />
+          <ArrowLeft className="size-4" />
         </button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label="Share"
             onClick={share}
-            className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-surface"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-white text-[#202124] shadow-xs"
           >
-            <Share2 className="size-5" />
+            <Share2 className="size-4" />
           </button>
           <Link
             href="/cart"
             aria-label="Cart"
-            className="relative flex size-11 cursor-pointer items-center justify-center rounded-full bg-surface"
+            className="relative flex size-10 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-white text-[#202124] shadow-xs"
           >
-            <ShoppingBag className="size-5" />
+            <ShoppingBag className="size-4" />
             {count > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-deep px-1 text-[9px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1a73e8] px-1 text-[9px] font-bold text-white">
                 {count}
               </span>
             )}
@@ -141,20 +141,22 @@ export function BuyBox({
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 md:gap-12 md:px-6 md:pt-8">
+      <div className="grid md:grid-cols-2 md:gap-14 md:px-6 md:pt-8">
+        {/* Left Column: Google Store Image Gallery */}
         <div className="px-4 md:px-0">
-          <div className="overflow-hidden rounded-[1.75rem] bg-surface shadow-sm">
+          <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-3xl border border-[#dadce0] bg-[#f8f9fa] p-8 shadow-xs">
             <ProductMedia
               art={product.art}
               color={variant.colorHex}
               image={productImage(product.image, variant.image)}
               alt={`${product.name} in ${variant.colorName}`}
-              className="aspect-square w-full"
+              className="h-full w-full object-contain"
               priority
             />
           </div>
+
           {thumbVariants.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
               {thumbVariants.map((item) => {
                 const selected = item.colorName === variant.colorName;
                 return (
@@ -162,10 +164,11 @@ export function BuyBox({
                     key={item.id}
                     type="button"
                     onClick={() => chooseColor(item.colorName)}
-                    className={cn(
-                      "relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-surface",
-                      selected && "ring-2 ring-deep ring-offset-2",
-                    )}
+                    className={`relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-2xl border p-2 transition-all ${
+                      selected
+                        ? "border-[#1a73e8] bg-white shadow-xs ring-2 ring-[#1a73e8]/30"
+                        : "border-[#dadce0] bg-[#f8f9fa] hover:border-[#bdc1c6] hover:bg-white"
+                    }`}
                     aria-label={item.colorName}
                   >
                     <ProductMedia
@@ -173,7 +176,7 @@ export function BuyBox({
                       color={item.colorHex}
                       image={productImage(product.image, item.image)}
                       alt={item.colorName}
-                      className="h-full w-full"
+                      className="h-full w-full object-contain"
                     />
                   </button>
                 );
@@ -182,40 +185,49 @@ export function BuyBox({
           )}
         </div>
 
-        <div className="mt-5 px-4 md:mt-0 md:px-0">
-          <h1 className="font-display text-3xl font-medium tracking-tight md:text-4xl">
-            {product.name}
-          </h1>
-          <p className="mt-1 text-sm text-muted">By {product.brand}</p>
-          <p className="mt-2 inline-flex items-center gap-1 text-sm font-bold">
-            <Star className="size-4 fill-fresh text-fresh" />
-            Certified stock · {variant.stock > 0 ? "In stock" : "Unavailable"}
-          </p>
+        {/* Right Column: Buy Box Options */}
+        <div className="mt-6 px-4 md:mt-0 md:px-0">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-[#5f6368]">{product.brand}</p>
+            <h1 className="mt-1 font-display text-3xl font-medium tracking-tight text-[#202124] md:text-4xl">
+              {product.name}
+            </h1>
+            <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-[#137333]">
+              <span className="size-2 rounded-full bg-[#137333]" />
+              Certified stock · {variant.stock > 0 ? "In stock & ready to ship" : "Currently unavailable"}
+            </p>
+          </div>
 
-          <div className="mt-5 flex items-center justify-between gap-4">
-            <p className="text-3xl font-bold tabular-nums">
-              {naira(variant.price)}
+          {/* Pricing & Stepper */}
+          <div className="mt-6 flex items-center justify-between gap-4 border-b border-[#dadce0] pb-6">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-medium tracking-tight text-[#202124] tabular-nums">
+                {naira(variant.price)}
+              </span>
               {discounted && (
-                <span className="ml-2 text-base font-normal text-muted line-through">
+                <span className="text-sm font-normal text-[#5f6368] line-through tabular-nums">
                   {naira(variant.compareAt!)}
                 </span>
               )}
-            </p>
+            </div>
+
             {variant.stock > 0 && (
-              <div className="flex h-11 items-center rounded-full bg-surface shadow-sm">
+              <div className="flex h-11 items-center rounded-full border border-[#dadce0] bg-[#f8f9fa] px-1">
                 <button
                   type="button"
-                  className="flex size-11 cursor-pointer items-center justify-center disabled:opacity-40"
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-white hover:text-[#202124] disabled:opacity-30"
                   aria-label="Decrease quantity"
                   disabled={qty <= 1}
                   onClick={() => setQty((value) => Math.max(1, value - 1))}
                 >
                   <Minus className="size-4" />
                 </button>
-                <span className="w-6 text-center font-bold tabular-nums">{qty}</span>
+                <span className="w-8 text-center text-sm font-medium tabular-nums text-[#202124]">
+                  {qty}
+                </span>
                 <button
                   type="button"
-                  className="flex size-11 cursor-pointer items-center justify-center disabled:opacity-40"
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-white hover:text-[#202124] disabled:opacity-30"
                   aria-label="Increase quantity"
                   disabled={qty >= variant.stock}
                   onClick={() => setQty((value) => Math.min(variant.stock, value + 1))}
@@ -226,9 +238,12 @@ export function BuyBox({
             )}
           </div>
 
-          <div className="mt-7">
-            <p className="text-sm font-bold">Colour</p>
-            <div className="mt-2 flex flex-wrap gap-2">
+          {/* Color Picker: Google Store concentric swatches */}
+          <div className="mt-6">
+            <p className="text-sm font-medium text-[#202124]">
+              Colour: <span className="font-normal text-[#5f6368]">{variant.colorName}</span>
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               {colors.map((name) => {
                 const swatch = product.variants.find((item) => item.colorName === name)!;
                 const selected = name === variant.colorName;
@@ -236,30 +251,31 @@ export function BuyBox({
                   <button
                     key={name}
                     type="button"
+                    aria-label={name}
+                    title={name}
                     aria-pressed={selected}
                     onClick={() => chooseColor(name)}
-                    className={cn(
-                      "inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-sm font-bold transition-all",
+                    className={`flex size-11 cursor-pointer items-center justify-center rounded-full transition-all ${
                       selected
-                        ? "border-deep bg-deep/5 text-deep ring-2 ring-deep ring-offset-2"
-                        : "border-black/10 hover:border-black/20",
-                    )}
+                        ? "ring-2 ring-[#1a73e8] ring-offset-2 ring-offset-white"
+                        : "border border-transparent hover:border-[#dadce0]"
+                    }`}
                   >
                     <span
-                      className="size-4 rounded-full border border-black/10"
+                      className="size-8 rounded-full border border-black/10 shadow-xs"
                       style={{ backgroundColor: swatch.colorHex }}
                     />
-                    {name}
                   </button>
                 );
               })}
             </div>
           </div>
 
+          {/* Storage Selection: Clean Material 3 segmented pill options */}
           {showStorage && (
             <div className="mt-6">
-              <p className="text-sm font-bold">{product.optionLabel}</p>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <p className="text-sm font-medium text-[#202124]">{product.optionLabel}</p>
+              <div className="mt-2.5 flex flex-wrap gap-2.5">
                 {storages.map((item) => {
                   const selected = item === variant.storage;
                   return (
@@ -268,12 +284,11 @@ export function BuyBox({
                       type="button"
                       aria-pressed={selected}
                       onClick={() => chooseStorage(item)}
-                      className={cn(
-                        "inline-flex h-11 cursor-pointer items-center rounded-full px-4 text-sm font-bold transition-all",
+                      className={`min-w-24 cursor-pointer rounded-xl border p-3 text-sm font-medium transition-all ${
                         selected
-                          ? "bg-deep text-white shadow-sm"
-                          : "border-0 bg-surface text-black hover:bg-black/[0.04]",
-                      )}
+                          ? "border-[#1a73e8] bg-[#e8f0fe] text-[#1a73e8] shadow-xs"
+                          : "border-[#dadce0] bg-white text-[#202124] hover:border-[#bdc1c6] hover:bg-[#f8f9fa]"
+                      }`}
                     >
                       {item}
                     </button>
@@ -283,82 +298,103 @@ export function BuyBox({
             </div>
           )}
 
+          {/* Condition Grades: Google M3 tonal chips */}
           <div className="mt-6">
-            <p className="text-sm font-bold">Condition</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {grades.map((item) => (
-                <ConditionChip
-                  key={item.id}
-                  condition={item.condition}
-                  selected={item.id === variant.id}
-                  onClick={() => {
-                    setCondition(item.condition);
-                    setQty(1);
-                    setGradeOpen(true);
-                  }}
-                />
-              ))}
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-[#202124]">Condition</p>
+              <button
+                type="button"
+                onClick={() => setGradeOpen(true)}
+                className="cursor-pointer text-xs font-medium text-[#1a73e8] hover:underline"
+              >
+                Grade guide
+              </button>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              {conditionMeta[variant.condition].blurb}
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {grades.map((item) => {
+                const selected = item.id === variant.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setCondition(item.condition);
+                      setQty(1);
+                    }}
+                    className={`cursor-pointer rounded-full px-4 py-2 text-xs font-medium transition-all ${
+                      selected
+                        ? "border border-[#c2e7ff] bg-[#c2e7ff] text-[#001d35] shadow-xs"
+                        : "border border-[#d2e3fc] bg-[#e8f0fe] text-[#1a73e8] hover:bg-[#d2e3fc]/60"
+                    }`}
+                  >
+                    {conditionMeta[item.condition]?.label ?? item.condition}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2.5 text-xs leading-relaxed text-[#5f6368]">
+              {conditionMeta[variant.condition]?.blurb}
             </p>
-            {variant.note && <p className="mt-1 text-sm text-muted">{variant.note}</p>}
+            {variant.note && <p className="mt-1 text-xs text-[#5f6368]">{variant.note}</p>}
           </div>
 
-          <div className="mt-8 rounded-[1.5rem] border border-black/[0.04] bg-surface p-5 shadow-sm">
-            <p className="text-sm font-bold">Quick Specs</p>
-            <ul className="mt-3 space-y-2.5 text-sm text-muted">
+          {/* Quick Specs: Clean Google Store specs table */}
+          <div className="mt-8 rounded-3xl border border-[#dadce0] bg-[#f8f9fa] p-6 shadow-xs">
+            <p className="text-sm font-medium text-[#202124]">Quick specs</p>
+            <ul className="mt-3 divide-y divide-[#dadce0] text-sm">
               {product.specs.slice(0, 4).map((spec) => (
-                <li key={spec.label} className="flex justify-between gap-4">
-                  <span>{spec.label}</span>
-                  <span className="font-bold text-black">{spec.value}</span>
+                <li key={spec.label} className="flex justify-between py-2.5 first:pt-0 last:pb-0">
+                  <span className="text-[#5f6368]">{spec.label}</span>
+                  <span className="font-medium text-[#202124]">{spec.value}</span>
                 </li>
               ))}
-              <li className="flex justify-between gap-4">
-                <span>Warranty</span>
-                <span className="font-bold text-black">12 months</span>
+              <li className="flex justify-between py-2.5 last:pb-0">
+                <span className="text-[#5f6368]">Warranty</span>
+                <span className="font-medium text-[#202124]">12 months</span>
               </li>
             </ul>
           </div>
 
-          <div className="mt-6 hidden gap-3 md:flex">
-            <button
-              type="button"
-              disabled={variant.stock < 1}
-              onClick={() => addToCart(true)}
-              className="inline-flex h-14 flex-1 cursor-pointer items-center justify-center rounded-full border-2 border-deep text-base font-bold text-deep transition-all hover:bg-deep/5 disabled:opacity-40"
-            >
-              Buy Now
-            </button>
+          {/* Desktop CTAs */}
+          <div className="mt-8 hidden gap-3 md:flex">
             <button
               type="button"
               disabled={variant.stock < 1}
               onClick={() => addToCart(false)}
-              className="inline-flex h-14 flex-1 cursor-pointer items-center justify-center rounded-full bg-deep text-base font-bold text-white shadow-sm transition-all hover:bg-[#0284c7] hover:shadow-md disabled:opacity-40"
+              className="inline-flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] px-8 text-sm font-medium text-white shadow-sm transition-all hover:bg-[#1557b0] hover:shadow-md disabled:opacity-40"
             >
-              Add to Cart
+              Add to cart
+            </button>
+            <button
+              type="button"
+              disabled={variant.stock < 1}
+              onClick={() => addToCart(true)}
+              className="inline-flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-white px-8 text-sm font-medium text-[#1a73e8] transition-all hover:bg-[#f8f9fa] disabled:opacity-40"
+            >
+              Buy now
             </button>
           </div>
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-black/[0.06] bg-white/80 p-3 backdrop-blur-xl md:hidden">
+      {/* Mobile Sticky CTA Bar */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#dadce0] bg-white/90 p-3 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-lg gap-3">
           <button
             type="button"
             disabled={variant.stock < 1}
-            onClick={() => addToCart(true)}
-            className="flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full border-2 border-deep font-bold text-deep transition-colors disabled:opacity-40"
+            onClick={() => addToCart(false)}
+            className="flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] px-6 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1557b0] disabled:opacity-40"
           >
-            Buy Now
+            Add to cart
           </button>
           <button
             type="button"
             disabled={variant.stock < 1}
-            onClick={() => addToCart(false)}
-            className="flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full bg-deep font-bold text-white shadow-sm transition-colors hover:bg-[#0284c7] disabled:opacity-40"
+            onClick={() => addToCart(true)}
+            className="flex h-13 flex-1 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-white px-6 text-sm font-medium text-[#1a73e8] transition-colors hover:bg-[#f8f9fa] disabled:opacity-40"
           >
-            Add to Cart
+            Buy now
           </button>
         </div>
       </div>
@@ -366,9 +402,9 @@ export function BuyBox({
       <Sheet open={gradeOpen} title="Condition grades" onClose={() => setGradeOpen(false)}>
         <div className="space-y-5">
           {(Object.keys(conditionMeta) as Condition[]).map((grade) => (
-            <div key={grade}>
+            <div key={grade} className="rounded-2xl border border-[#dadce0] bg-[#f8f9fa] p-4">
               <ConditionChip condition={grade} />
-              <p className="mt-2 text-sm leading-relaxed">{conditionMeta[grade].definition}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#5f6368]">{conditionMeta[grade].definition}</p>
             </div>
           ))}
         </div>

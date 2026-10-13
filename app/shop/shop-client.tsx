@@ -12,8 +12,6 @@ import {
   storageOptions,
 } from "@/lib/catalog";
 import type { Condition } from "@/lib/types";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
 import { Package, SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -70,72 +68,89 @@ export function ShopClient() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
       <CategoryChips active={query.category ?? "all"} />
-      <div className="mt-8 flex items-end justify-between gap-4">
+
+      <div className="mt-8 flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
         <div>
-          <h1 className="font-display text-4xl font-medium tracking-tight md:text-5xl">{title}</h1>
-          <p className="mt-2 text-sm text-muted">
-            {rows.length} {rows.length === 1 ? "device" : "devices"}
+          <h1 className="font-display text-3xl font-medium tracking-tight text-[#202124] md:text-4xl">{title}</h1>
+          <p className="mt-1 text-sm text-[#5f6368]">
+            {rows.length} {rows.length === 1 ? "device" : "devices"} available
           </p>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+      <div className="mt-6 flex flex-wrap items-center gap-2.5">
         <button
           type="button"
           onClick={() => setFiltersOpen(true)}
-          className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border-0 bg-surface px-4 text-sm font-bold shadow-sm transition-shadow hover:shadow"
+          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-[#dadce0] bg-white px-4 text-xs font-medium text-[#202124] shadow-xs transition-all hover:border-[#bdc1c6] hover:bg-[#f8f9fa] hover:shadow-sm"
         >
-          <SlidersHorizontal className="size-4" />
-          Filter
+          <SlidersHorizontal className="size-3.5 text-[#5f6368]" />
+          <span>Filters</span>
+          {active.length > 0 && (
+            <span className="flex size-5 items-center justify-center rounded-full bg-[#c2e7ff] text-[11px] font-bold text-[#001d35]">
+              {active.length}
+            </span>
+          )}
         </button>
-        <label className="sr-only" htmlFor="sort">
-          Sort
-        </label>
-        <select
-          id="sort"
-          value={query.sort}
-          onChange={(event) => update({ sort: event.target.value })}
-          className="h-12 cursor-pointer rounded-full border-0 bg-surface px-4 text-sm font-bold shadow-sm transition-shadow hover:shadow"
-        >
-          <option value="newest">Newest</option>
-          <option value="price-asc">Price, low to high</option>
-          <option value="price-desc">Price, high to low</option>
-          <option value="deals">Best deals</option>
-        </select>
+
+        <div className="relative">
+          <label className="sr-only" htmlFor="sort">
+            Sort
+          </label>
+          <select
+            id="sort"
+            value={query.sort}
+            onChange={(event) => update({ sort: event.target.value })}
+            className="h-10 cursor-pointer rounded-full border border-[#dadce0] bg-white px-4 pr-8 text-xs font-medium text-[#202124] shadow-xs transition-all hover:border-[#bdc1c6] hover:bg-[#f8f9fa] hover:shadow-sm focus:border-[#1a73e8] focus:outline-none"
+          >
+            <option value="newest">Sort by: Newest</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="deals">Best Deals</option>
+          </select>
+        </div>
       </div>
 
       {active.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="mr-1 text-xs font-medium text-[#5f6368]">Active:</span>
           {active.map((chip) => (
-            <button
+            <span
               key={chip.key}
-              type="button"
-              onClick={() => update({ [chip.key]: null })}
-              className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-full border border-deep/20 bg-deep/10 px-3.5 text-sm font-bold text-deep transition-colors hover:bg-deep/15"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#c2e7ff] bg-[#e8f0fe] pl-3 pr-1.5 text-xs font-medium text-[#174ea6]"
             >
-              {chip.label}
-              <span className="sr-only">Remove</span>
-              <span
-                aria-hidden="true"
-                className="flex size-4 items-center justify-center rounded-full bg-deep/20 text-xs font-bold leading-none"
+              <span>{chip.label}</span>
+              <button
+                type="button"
+                onClick={() => update({ [chip.key]: null })}
+                className="flex size-5 cursor-pointer items-center justify-center rounded-full text-[#174ea6] transition-colors hover:bg-[#c2e7ff]"
+                aria-label={`Remove filter ${chip.label}`}
               >
-                ×
-              </span>
-            </button>
+                <span aria-hidden="true" className="text-sm font-bold leading-none">×</span>
+              </button>
+            </span>
           ))}
+          <button
+            type="button"
+            onClick={() => router.replace("/shop")}
+            className="ml-2 cursor-pointer text-xs font-medium text-[#1a73e8] hover:underline"
+          >
+            Clear all
+          </button>
         </div>
       )}
 
       {rows.length === 0 ? (
-        <div className="py-16">
-          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-surface text-muted">
-            <Package className="size-7" />
+        <div className="py-20 text-center">
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full border border-[#dadce0] bg-[#f8f9fa] text-[#5f6368]">
+            <Package className="size-8" />
           </div>
-          <p className="font-display text-2xl font-medium">Nothing matches these filters.</p>
+          <p className="font-display text-2xl font-medium text-[#202124]">Nothing matches these filters.</p>
+          <p className="mt-2 text-sm text-[#5f6368]">Try selecting different categories, price ranges, or conditions.</p>
           <button
             type="button"
             onClick={() => router.replace("/shop")}
-            className="mt-4 h-12 cursor-pointer font-bold text-deep"
+            className="mt-6 inline-flex h-11 cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] px-6 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1557b0]"
           >
             Clear filters
           </button>
@@ -198,6 +213,7 @@ function FilterSheet({
   const [draftBrand, setDraftBrand] = useState(brand ?? "");
   const [draftPrice, setDraftPrice] = useState(price ?? "");
   const [draftStorage, setDraftStorage] = useState(storage ?? "");
+
   const count = shopResults({
     category,
     q,
@@ -209,7 +225,7 @@ function FilterSheet({
   }).length;
 
   return (
-    <Sheet open={open} title="Filter" onClose={onClose} panel="drawer">
+    <Sheet open={open} title="Filter devices" onClose={onClose} panel="drawer">
       <FilterGroup label="Condition">
         {conditions.map((item) => {
           const selected = draftCondition === item;
@@ -223,6 +239,7 @@ function FilterSheet({
           );
         })}
       </FilterGroup>
+
       <FilterGroup label="Brand">
         {brands().map((item) => (
           <Choice
@@ -234,6 +251,7 @@ function FilterSheet({
           </Choice>
         ))}
       </FilterGroup>
+
       <FilterGroup label="Price">
         {prices.map((item) => (
           <Choice
@@ -245,6 +263,7 @@ function FilterSheet({
           </Choice>
         ))}
       </FilterGroup>
+
       {storages.length > 0 && (
         <FilterGroup label="Storage">
           {storages.map((item) => (
@@ -258,11 +277,10 @@ function FilterSheet({
           ))}
         </FilterGroup>
       )}
-      <Button
+
+      <button
         type="button"
-        variant="contained"
-        fullWidth
-        sx={{ mt: 3, height: 48, borderRadius: 999, fontWeight: 700 }}
+        className="mt-8 flex h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1557b0]"
         onClick={() =>
           onApply({
             condition: draftCondition || null,
@@ -273,7 +291,7 @@ function FilterSheet({
         }
       >
         Show {count} {count === 1 ? "device" : "devices"}
-      </Button>
+      </button>
     </Sheet>
   );
 }
@@ -281,7 +299,7 @@ function FilterSheet({
 function FilterGroup({ label, children }: { label: string; children: ReactNode }) {
   return (
     <fieldset className="mt-5">
-      <legend className="mb-2 text-sm font-bold">{label}</legend>
+      <legend className="mb-2 text-xs font-medium uppercase tracking-wider text-[#5f6368]">{label}</legend>
       <div className="flex flex-wrap gap-2">{children}</div>
     </fieldset>
   );
@@ -297,19 +315,16 @@ function Choice({
   children: ReactNode;
 }) {
   return (
-    <Chip
-      label={children}
+    <button
+      type="button"
       onClick={onClick}
-      clickable
-      color={selected ? "primary" : "default"}
-      variant={selected ? "filled" : "outlined"}
-      sx={{
-        height: 48,
-        fontWeight: 700,
-        bgcolor: selected ? "#02A6FB" : "#f8fafc",
-        color: selected ? "#fff" : "#000",
-        borderColor: selected ? "transparent" : "rgba(0,0,0,0.08)",
-      }}
-    />
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
+        selected
+          ? "border-[#c2e7ff] bg-[#c2e7ff] text-[#001d35]"
+          : "border-[#dadce0] bg-white text-[#3c4043] hover:bg-[#f8f9fa]"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

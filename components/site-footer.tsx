@@ -1,3 +1,4 @@
+import { WhatsAppIcon } from "@/components/icons";
 import { whatsappHref } from "@/lib/site";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,26 +41,26 @@ const columns = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-slate-900 text-white">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1.2fr_2fr] md:gap-16 md:px-6 md:py-20">
+    <footer className="mt-auto border-t border-[#dadce0] bg-[#f8f9fa] text-[#202124]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[1.2fr_2fr] md:gap-16 md:px-6 md:py-16">
         <div>
           <Image
             src="/brand/logo-black.svg"
             alt="Fzmobile"
-            width={132}
-            height={36}
+            width={124}
+            height={34}
             unoptimized
-            className="brightness-0 invert"
           />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+          <p className="mt-4 max-w-xs text-xs leading-relaxed text-[#5f6368] md:text-sm">
             Authentic tech in Nigeria. Exact colour, storage, and grade — prices in Naira.
           </p>
           <a
             href={whatsappHref()}
             target="_blank"
             rel="noreferrer"
-            className="mt-6 inline-flex h-11 cursor-pointer items-center rounded-full bg-[#25D366] px-5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#dadce0] bg-white px-5 py-2.5 text-xs font-medium text-[#1a73e8] shadow-xs transition-colors hover:bg-[#f1f3f4]"
           >
+            <WhatsAppIcon className="size-4 text-[#25D366]" />
             Chat on WhatsApp
           </a>
         </div>
@@ -67,8 +68,10 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {columns.map((column) => (
             <div key={column.title}>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{column.title}</p>
-              <ul className="mt-4 space-y-3">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#202124]">
+                {column.title}
+              </p>
+              <ul className="space-y-1">
                 {column.links.map(([label, href]) => (
                   <li key={href}>
                     {href.startsWith("http") ? (
@@ -76,14 +79,14 @@ export function SiteFooter() {
                         href={href}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm text-slate-300 transition-colors hover:text-white"
+                        className="block text-xs leading-6 text-[#5f6368] transition-colors hover:text-[#1a73e8]"
                       >
                         {label}
                       </a>
                     ) : (
                       <Link
                         href={href}
-                        className="text-sm text-slate-300 transition-colors hover:text-white"
+                        className="block text-xs leading-6 text-[#5f6368] transition-colors hover:text-[#1a73e8]"
                       >
                         {label}
                       </Link>
@@ -95,10 +98,11 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="border-t border-slate-800">
-        <p className="mx-auto max-w-6xl px-4 py-5 text-center text-xs text-slate-500 md:px-6">
-          © {new Date().getFullYear()} Fzmobile. All rights reserved.
-        </p>
+      <div className="border-t border-[#dadce0] py-6">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-xs text-[#70757a] sm:flex-row md:px-6">
+          <p>© {new Date().getFullYear()} Fzmobile. All rights reserved.</p>
+          <p>Lagos, Nigeria · Authentic Tech Store</p>
+        </div>
       </div>
     </footer>
   );

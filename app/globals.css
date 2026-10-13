@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-lato), "Lato", sans-serif;
-  --font-display: var(--font-bricolage), "Bricolage Grotesque", sans-serif;
-  --color-deep: #02a6fb;
-  --color-fresh: #4bb8fc;
-  --color-soft: #a5ddfb;
-  --color-mist: #f0f7ff;
-  --color-muted: #6b7280;
-  --color-line: #e5e7eb;
-  --color-surface: #f8fafc;
-  --color-accent: #FF6B35;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  --color-deep: #1a73e8;
+  --color-fresh: #0b57d0;
+  --color-soft: #c2e7ff;
+  --color-mist: #e8f0fe;
+  --color-muted: #5f6368;
+  --color-line: #dadce0;
+  --color-surface: #f8f9fa;
+  --color-accent: #137333;
 }
 
 html {
@@ -18,13 +18,13 @@ html {
 }
 
 body {
-  background: #fff;
-  color: #000;
+  background: #ffffff;
+  color: #202124;
 }
 
 ::selection {
-  background: #a5ddfb;
-  color: #000;
+  background: #c2e7ff;
+  color: #001d35;
 }
 
 .scroll-row {
@@ -35,13 +35,30 @@ body {
   display: none;
 }
 
+.google-elevation-1 {
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.google-elevation-2 {
+  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+}
+
+.google-card {
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.google-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px 2px rgba(60,64,67,0.15);
+}
+
 .card-hover {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px 2px rgba(60,64,67,0.15);
 }
 
 @keyframes rise {

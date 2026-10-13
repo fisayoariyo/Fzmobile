@@ -4,18 +4,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StoreProvider } from "@/lib/store";
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Lato } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-bricolage",
-});
-
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-lato",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -32,9 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${bricolage.variable} ${lato.variable} h-full antialiased`}
+      className={`${jakarta.variable} font-sans h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-white font-sans text-black">
+      <body className="flex min-h-full flex-col bg-[#ffffff] font-sans text-[#202124]">
         <MuiProvider>
           <StoreProvider>
             <SiteHeader />

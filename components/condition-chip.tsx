@@ -2,13 +2,6 @@
 
 import { conditionMeta } from "@/lib/catalog";
 import type { Condition } from "@/lib/types";
-import Chip from "@mui/material/Chip";
-
-const fills: Record<Condition, { bg: string; color: string }> = {
-  new_sealed: { bg: "#02A6FB", color: "#FFFFFF" },
-  grade_a: { bg: "#4BB8FC", color: "#000000" },
-  grade_b: { bg: "#A5DDFB", color: "#000000" },
-};
 
 export function ConditionChip({
   condition,
@@ -21,24 +14,32 @@ export function ConditionChip({
   onClick?: () => void;
   selected?: boolean;
 }) {
-  const fill = fills[condition];
+  const meta = conditionMeta[condition];
+  const label = meta?.label ?? condition;
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
+          selected
+            ? "border border-[#c2e7ff] bg-[#c2e7ff] text-[#001d35] shadow-xs"
+            : "border border-[#d2e3fc] bg-[#e8f0fe]/70 text-[#1a73e8] hover:bg-[#e8f0fe]"
+        } ${className ?? ""}`}
+      >
+        {label}
+      </button>
+    );
+  }
+
   return (
-    <Chip
-      label={conditionMeta[condition].label}
-      onClick={onClick}
-      clickable={Boolean(onClick)}
-      className={className}
-      sx={{
-        bgcolor: fill.bg,
-        color: fill.color,
-        fontWeight: 700,
-        fontSize: 11,
-        height: onClick ? 48 : 28,
-        px: onClick ? 1 : 0,
-        outline: selected ? "2px solid #000" : "none",
-        outlineOffset: 2,
-        "& .MuiChip-label": { px: 1.25 },
-      }}
-    />
+    <span
+      className={`inline-flex items-center rounded-full border border-[#d2e3fc] bg-[#e8f0fe] px-2.5 py-0.5 text-[11px] font-medium text-[#1a73e8] ${
+        className ?? ""
+      }`}
+    >
+      {label}
+    </span>
   );
 }
