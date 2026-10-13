@@ -24,7 +24,7 @@ export function ProductCard({
       href={`/product/${product.slug}?v=${variant.id}`}
       className="group block cursor-pointer rounded-3xl border border-[#dadce0] bg-white p-3.5 shadow-xs transition-all duration-200 hover:border-[#1a73e8]/40 hover:shadow-md md:p-4"
     >
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#f8f9fa] flex items-center justify-center p-3">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#f8f9fa] flex items-center justify-center p-1">
         {deal && (
           <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-[#137333] px-2.5 py-0.5 text-[11px] font-medium text-white shadow-xs">
             Save {percentOff > 0 ? `${percentOff}%` : "Special"}

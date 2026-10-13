@@ -27,13 +27,13 @@ export function ProductMedia({
   }
 
   return (
-    <div className={`relative bg-white ${className ?? ""}`}>
+    <div className={`relative bg-transparent ${className ?? ""}`}>
       <Image
         src={image}
         alt={alt}
         fill
         sizes="(max-width: 768px) 50vw, 320px"
-        className="object-contain p-3 md:p-6"
+        className="object-contain"
         priority={priority}
         unoptimized={image.startsWith("/products/")}
         onError={() => setFailed(true)}
