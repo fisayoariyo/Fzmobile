@@ -9,7 +9,23 @@ import { Menu, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
+const desktopNav = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/shop?deals=1", label: "Deals" },
+  { href: "/friends", label: "Friends" },
+  { href: "/track", label: "Track" },
+] as const;
 
 const shopLinks = [
   { href: "/shop", label: "All tech", strong: true },
@@ -38,6 +54,7 @@ const policyLinks = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const isClient = useIsClient();
   const { count } = useStore();
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const [searchPath, setSearchPath] = useState<string | null>(null);
@@ -58,46 +75,76 @@ export function SiteHeader() {
     setMenuPath(null);
   }
 
+  const hideOnMobileHome = isClient && pathname === "/";
+
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-white">
-      <div className="mx-auto flex h-16 max-w-6xl items-center px-2 md:px-4">
+    <header
+      className={`sticky top-0 z-40 border-b border-black/[0.04] bg-white/80 backdrop-blur-xl ${
+        hideOnMobileHome ? "hidden md:block" : ""
+      }`}
+    >
+      <div className="mx-auto flex h-16 max-w-6xl items-center px-2 md:h-[4.5rem] md:px-6">
         <button
           type="button"
-          className="flex size-12 cursor-pointer items-center justify-center"
+          className="flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface md:hidden"
           aria-label="Menu"
           onClick={() => setMenuPath(pathname)}
         >
           <Menu className="size-6" />
         </button>
-        <Link href="/" className="ml-1" aria-label="Fzmobile home">
+        <Link href="/" className="ml-1 md:ml-0" aria-label="Fzmobile home">
           <Image src="/brand/logo-black.svg" alt="" width={118} height={32} priority unoptimized />
         </Link>
-        <div className="ml-auto flex items-center">
+
+        <nav className="ml-10 hidden items-center gap-7 md:flex">
+          {desktopNav.map((link) => {
+            const pathOnly = link.href.split("?")[0];
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : link.href.includes("deals")
+                  ? false
+                  : pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-semibold transition-colors duration-200 ${
+                  isActive ? "text-deep" : "text-black/70 hover:text-deep"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
-            className="flex size-12 cursor-pointer items-center justify-center"
+            className="flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface"
             aria-label="Search"
             onClick={openSearch}
           >
-            <Search className="size-6" />
+            <Search className="size-5" />
           </button>
           <a
             href={whatsappHref()}
-            className="flex size-12 cursor-pointer items-center justify-center"
+            className="hidden size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface sm:flex"
             aria-label="WhatsApp support"
             target="_blank"
             rel="noreferrer"
           >
-            <WhatsAppIcon className="size-6" />
+            <WhatsAppIcon className="size-5" />
           </a>
           <Link
             href="/cart"
-            className="relative flex size-12 cursor-pointer items-center justify-center"
+            className="relative flex size-12 cursor-pointer items-center justify-center rounded-xl transition-colors duration-200 hover:bg-surface"
             aria-label={count > 0 ? `Cart, ${count} ${count === 1 ? "item" : "items"}` : "Cart"}
           >
-            <ShoppingBag className="size-6" />
+            <ShoppingBag className="size-5" />
             {count > 0 && (
-              <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-deep px-1 text-[11px] font-bold text-white">
+              <span className="absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-deep px-1 text-[10px] font-bold text-white">
                 {count}
               </span>
             )}

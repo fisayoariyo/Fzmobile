@@ -22,7 +22,7 @@ export function Sheet({
   panel?: "sheet" | "drawer";
 }) {
   const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("md"));
+  const desktop = useMediaQuery(theme.breakpoints.up("md"), { noSsr: true });
   const anchor = panel === "drawer" && desktop ? "right" : "bottom";
 
   return (

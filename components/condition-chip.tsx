@@ -5,9 +5,9 @@ import type { Condition } from "@/lib/types";
 import Chip from "@mui/material/Chip";
 
 const fills: Record<Condition, { bg: string; color: string }> = {
-  new_sealed: { bg: "#135E4B", color: "#FFFFFF" },
-  grade_a: { bg: "#4CB572", color: "#000000" },
-  grade_b: { bg: "#A1D8B5", color: "#000000" },
+  new_sealed: { bg: "#02A6FB", color: "#FFFFFF" },
+  grade_a: { bg: "#4BB8FC", color: "#000000" },
+  grade_b: { bg: "#A5DDFB", color: "#000000" },
 };
 
 export function ConditionChip({

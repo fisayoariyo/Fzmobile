@@ -125,7 +125,7 @@ function Power({ color }: { color: string }) {
       <rect x="96" y="110" width="208" height="180" rx="22" fill={color} stroke="#000" strokeOpacity="0.16" />
       <rect x="168" y="86" width="64" height="28" rx="8" fill="#2A2A2A" />
       <rect x="122" y="142" width="96" height="58" rx="8" fill="#14382d" />
-      <rect x="136" y="158" width="48" height="8" rx="2" fill="#4CB572" />
+      <rect x="136" y="158" width="48" height="8" rx="2" fill="#4BB8FC" />
       <circle cx="250" cy="230" r="16" fill="#111" />
     </g>
   );

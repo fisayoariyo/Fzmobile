@@ -53,24 +53,7 @@ def main() -> None:
                 im.save(path, "JPEG", quality=88, optimize=True)
                 print(f"NORM {dest} {path.stat().st_size}")
 
-    # Prefer Apple store packshots where downloaded
-    swaps = {
-        "iphone-16.jpg": "iphone-16-apple.jpg",
-        "iphone-15.jpg": "iphone-15-apple.jpg",
-        "iphone-14.jpg": "iphone-14-apple.jpg",
-        "airpods-pro.jpg": "airpods-apple.jpg",
-        "ipad-10.jpg": "ipad-apple.jpg",
-        "macbook-pro-14.jpg": "mbp-apple.jpg",
-        "adapter.jpg": "adapter-apple.jpg",
-    }
-    for dest, src in swaps.items():
-        src_path = OUT / src
-        dest_path = OUT / dest
-        if src_path.exists() and src_path.stat().st_size > 20_000:
-            data = src_path.read_bytes()
-            dest_path.write_bytes(data)
-            print(f"SWAP {dest} <- {src} {len(data)}")
-
+    # Do not overwrite Apple CDN finish-select assets (see fetch_apple_cdn.py).
     print("DONE")
 
 

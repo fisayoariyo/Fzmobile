@@ -1,3 +1,4 @@
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { MuiProvider } from "@/components/mui-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -37,8 +38,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <MuiProvider>
           <StoreProvider>
             <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
+            <main className="flex-1 pb-16 md:pb-0">{children}</main>
+            <div className="hidden md:block">
+              <SiteFooter />
+            </div>
+            <MobileTabBar />
           </StoreProvider>
         </MuiProvider>
       </body>

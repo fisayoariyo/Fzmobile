@@ -30,11 +30,11 @@ export function CategoryChips({ active }: { active?: string }) {
             sx={{
               height: 48,
               fontWeight: 700,
-              bgcolor: selected ? "#135E4B" : "#fff",
+              bgcolor: selected ? "#02A6FB" : "#fff",
               color: selected ? "#fff" : "#000",
               borderColor: "rgba(0,0,0,0.15)",
               "&:hover": {
-                bgcolor: selected ? "#0f4a3b" : "rgba(0,0,0,0.03)",
+                bgcolor: selected ? "#0284c7" : "rgba(0,0,0,0.03)",
               },
             }}
           />

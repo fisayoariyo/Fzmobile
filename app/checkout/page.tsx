@@ -18,6 +18,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+const fieldSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "16px",
+    bgcolor: "#f8fafc",
+    "& fieldset": { borderColor: "rgba(0,0,0,0.06)" },
+    "&:hover fieldset": { borderColor: "rgba(0,0,0,0.15)" },
+    "&.Mui-focused fieldset": { borderColor: "#02a6fb" },
+  },
+};
+
+const selectSx = {
+  borderRadius: "16px",
+  bgcolor: "#f8fafc",
+  "& fieldset": { borderColor: "rgba(0,0,0,0.06)" },
+  "&:hover fieldset": { borderColor: "rgba(0,0,0,0.15)" },
+  "&.Mui-focused fieldset": { borderColor: "#02a6fb" },
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { lines, placeOrder, ready } = useStore();
@@ -44,15 +62,22 @@ export default function CheckoutPage() {
   const total = subtotal + (quote?.fee ?? 0);
 
   if (!ready) {
-    return <p className="mx-auto max-w-3xl px-4 py-8 text-sm text-muted">Loading checkout…</p>;
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <p className="text-sm text-muted">Loading checkout…</p>
+      </div>
+    );
   }
 
   if (detailed.length === 0) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="font-display text-4xl font-medium">Checkout</h1>
-        <p className="mt-4">Your cart is empty.</p>
-        <Link href="/shop" className="mt-4 inline-flex font-bold text-deep">
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+        <h1 className="font-display text-4xl font-medium tracking-tight">Checkout</h1>
+        <p className="mt-3 text-muted">Your cart is empty.</p>
+        <Link
+          href="/shop"
+          className="mt-6 inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-deep px-8 font-semibold text-white shadow-md shadow-deep/20 transition-all hover:bg-deep/90"
+        >
           Shop devices
         </Link>
       </div>
@@ -62,7 +87,7 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-8 md:grid-cols-[1.2fr_0.8fr] md:px-6">
       <form
-        className="space-y-4"
+        className="space-y-5"
         onSubmit={(event) => {
           event.preventDefault();
           const normalized = normalizeNgPhone(phone);
@@ -90,39 +115,75 @@ export default function CheckoutPage() {
           }
         }}
       >
-        <h1 className="font-display text-4xl font-medium">Checkout</h1>
-        <p className="text-sm text-muted">No account needed. We use your phone number to track the order.</p>
+        <div>
+          <h1 className="font-display text-4xl font-medium tracking-tight">Checkout</h1>
+          <p className="mt-1.5 text-sm text-muted">
+            No account needed. We use your phone number to track the order.
+          </p>
+        </div>
 
-        <TextField label="Full name" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
-        <TextField
-          label="Phone number"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          placeholder="0803 123 4567"
-          slotProps={{ htmlInput: { inputMode: "tel", autoComplete: "tel" } }}
-        />
-        <TextField
-          label="Address"
-          value={line}
-          onChange={(event) => setLine(event.target.value)}
-          autoComplete="street-address"
-        />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-4">
           <TextField
-            label="City"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-            autoComplete="address-level2"
+            fullWidth
+            label="Full name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoComplete="name"
+            sx={fieldSx}
           />
-          <FormControl fullWidth>
-            <InputLabel id="state-label">State</InputLabel>
+          <TextField
+            fullWidth
+            label="Phone number"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="0803 123 4567"
+            slotProps={{ htmlInput: { inputMode: "tel", autoComplete: "tel" } }}
+            sx={fieldSx}
+          />
+          <TextField
+            fullWidth
+            label="Address"
+            value={line}
+            onChange={(event) => setLine(event.target.value)}
+            autoComplete="street-address"
+            sx={fieldSx}
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <TextField
+              fullWidth
+              label="City"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              autoComplete="address-level2"
+              sx={fieldSx}
+            />
+            <FormControl fullWidth sx={fieldSx}>
+              <InputLabel id="state-label">State</InputLabel>
+              <Select
+                labelId="state-label"
+                label="State"
+                value={state}
+                onChange={(event) => setState(event.target.value)}
+                sx={selectSx}
+              >
+                {NG_STATES.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+          <FormControl fullWidth sx={fieldSx}>
+            <InputLabel id="country-label">Country</InputLabel>
             <Select
-              labelId="state-label"
-              label="State"
-              value={state}
-              onChange={(event) => setState(event.target.value)}
+              labelId="country-label"
+              label="Country"
+              value={country}
+              onChange={(event) => setCountry(event.target.value)}
+              sx={selectSx}
             >
-              {NG_STATES.map((item) => (
+              {COUNTRIES.map((item) => (
                 <MenuItem key={item} value={item}>
                   {item}
                 </MenuItem>
@@ -130,95 +191,102 @@ export default function CheckoutPage() {
             </Select>
           </FormControl>
         </div>
-        <FormControl fullWidth>
-          <InputLabel id="country-label">Country</InputLabel>
-          <Select
-            labelId="country-label"
-            label="Country"
-            value={country}
-            onChange={(event) => setCountry(event.target.value)}
-          >
-            {COUNTRIES.map((item) => (
-              <MenuItem key={item} value={item}>
-                {item}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
         {quote && (
-          <div className="rounded-2xl border border-black/10 p-4">
-            <p className="text-sm text-muted">Delivery</p>
-            <p className="mt-1 font-display text-2xl font-medium">{quote.label}</p>
-            <p className="mt-1 text-sm">{quote.estimate}</p>
-            <p className="mt-3 font-bold tabular-nums">{naira(quote.fee)}</p>
+          <div className="rounded-2xl border border-black/[0.04] bg-surface p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Delivery Option</p>
+            <div className="mt-2 flex items-baseline justify-between gap-4">
+              <p className="font-display text-2xl font-medium tracking-tight">{quote.label}</p>
+              <p className="text-lg font-bold tabular-nums text-deep">{naira(quote.fee)}</p>
+            </div>
+            <p className="mt-1 text-sm text-muted">{quote.estimate}</p>
           </div>
         )}
 
-        <FormControlLabel
-          control={<Checkbox checked={terms} onChange={(event) => setTerms(event.target.checked)} />}
-          label={
-            <span className="text-sm">
-              I accept the{" "}
-              <Link href="/policies/terms" className="font-bold text-deep">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="/policies/delivery" className="font-bold text-deep">
-                Delivery
-              </Link>{" "}
-              policy.
-            </span>
-          }
-        />
-        {hasPreowned && (
+        <div className="space-y-1 pt-1">
           <FormControlLabel
-            control={<Checkbox checked={gradeAck} onChange={(event) => setGradeAck(event.target.checked)} />}
-            label={<span className="text-sm">I have read the condition grade for each pre-owned item in this order.</span>}
+            control={<Checkbox checked={terms} onChange={(event) => setTerms(event.target.checked)} />}
+            label={
+              <span className="text-sm">
+                I accept the{" "}
+                <Link href="/policies/terms" className="font-semibold text-deep hover:underline">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/policies/delivery" className="font-semibold text-deep hover:underline">
+                  Delivery
+                </Link>{" "}
+                policy.
+              </span>
+            }
           />
-        )}
+          {hasPreowned && (
+            <FormControlLabel
+              control={<Checkbox checked={gradeAck} onChange={(event) => setGradeAck(event.target.checked)} />}
+              label={<span className="text-sm">I have read the condition grade for each pre-owned item in this order.</span>}
+            />
+          )}
+        </div>
+
         {error && (
-          <p className="text-sm font-bold" role="alert">
+          <div className="rounded-xl border border-red-200/60 bg-red-50 p-3 text-sm font-medium text-red-700" role="alert">
             {error}
-          </p>
+          </div>
         )}
-        <Button type="submit" variant="contained" fullWidth sx={{ height: 48, borderRadius: 999, fontWeight: 700 }}>
+
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          sx={{
+            height: 56,
+            borderRadius: 999,
+            fontWeight: 700,
+            fontSize: "1rem",
+            textTransform: "none",
+          }}
+        >
           Place order
         </Button>
       </form>
 
-      <aside className="h-fit rounded-2xl border border-black/10 p-4">
-        <h2 className="font-display text-2xl font-medium">Order</h2>
-        <ul className="mt-4 space-y-4">
+      <aside className="h-fit rounded-2xl border border-black/[0.04] bg-surface p-6 shadow-sm">
+        <h2 className="font-display text-2xl font-medium tracking-tight">Order</h2>
+        <ul className="mt-5 space-y-4">
           {detailed.map((item) => (
-            <li key={item.variant.id} className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-bold">
-                  {item.product.name} × {item.qty}
+            <li
+              key={item.variant.id}
+              className="flex items-start justify-between gap-3 border-b border-black/[0.04] pb-4 last:border-b-0 last:pb-0"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold leading-snug">
+                  {item.product.name} <span className="font-normal text-muted">× {item.qty}</span>
                 </p>
-                <p className="text-sm text-muted">
+                <p className="mt-0.5 text-xs text-muted">
                   {item.variant.colorName} · {item.variant.storage}
                 </p>
                 <div className="mt-2">
                   <ConditionChip condition={item.variant.condition} />
                 </div>
               </div>
-              <p className="font-bold tabular-nums">{naira(item.variant.price * item.qty)}</p>
+              <p className="shrink-0 text-sm font-bold tabular-nums">
+                {naira(item.variant.price * item.qty)}
+              </p>
             </li>
           ))}
         </ul>
-        <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+        <dl className="mt-6 space-y-2.5 border-t border-black/[0.06] pt-5 text-sm">
           <div className="flex justify-between">
             <dt className="text-muted">Subtotal</dt>
-            <dd className="font-bold tabular-nums">{naira(subtotal)}</dd>
+            <dd className="font-semibold tabular-nums">{naira(subtotal)}</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-muted">Delivery</dt>
-            <dd className="font-bold tabular-nums">{quote ? naira(quote.fee) : "—"}</dd>
+            <dd className="font-semibold tabular-nums">{quote ? naira(quote.fee) : "—"}</dd>
           </div>
-          <div className="flex justify-between text-base">
+          <div className="flex justify-between border-t border-black/[0.06] pt-3 text-base">
             <dt className="font-bold">Total</dt>
-            <dd className="font-bold tabular-nums">{naira(total)}</dd>
+            <dd className="text-xl font-bold tabular-nums text-deep">{naira(total)}</dd>
           </div>
         </dl>
       </aside>

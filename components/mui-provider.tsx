@@ -1,5 +1,6 @@
 "use client";
 
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import type { ReactNode } from "react";
 
@@ -8,15 +9,15 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#135E4B",
+      main: "#02A6FB",
       contrastText: "#FFFFFF",
     },
     secondary: {
-      main: "#4CB572",
+      main: "#4BB8FC",
       contrastText: "#000000",
     },
     success: {
-      main: "#4CB572",
+      main: "#4BB8FC",
       contrastText: "#000000",
     },
     background: {
@@ -64,7 +65,7 @@ const theme = createTheme({
             borderColor: "rgba(0,0,0,0.35)",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#135E4B",
+            borderColor: "#02A6FB",
             borderWidth: 1.5,
           },
         },
@@ -96,9 +97,11 @@ const theme = createTheme({
 
 export function MuiProvider({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </AppRouterCacheProvider>
   );
 }

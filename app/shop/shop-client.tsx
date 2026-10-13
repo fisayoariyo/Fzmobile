@@ -14,7 +14,7 @@ import {
 import type { Condition } from "@/lib/types";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import { SlidersHorizontal } from "lucide-react";
+import { Package, SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
@@ -72,8 +72,8 @@ export function ShopClient() {
       <CategoryChips active={query.category ?? "all"} />
       <div className="mt-8 flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-medium">{title}</h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className="font-display text-4xl font-medium tracking-tight md:text-5xl">{title}</h1>
+          <p className="mt-2 text-sm text-muted">
             {rows.length} {rows.length === 1 ? "device" : "devices"}
           </p>
         </div>
@@ -83,7 +83,7 @@ export function ShopClient() {
         <button
           type="button"
           onClick={() => setFiltersOpen(true)}
-          className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border border-black/15 px-4 text-sm font-bold"
+          className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border-0 bg-surface px-4 text-sm font-bold shadow-sm transition-shadow hover:shadow"
         >
           <SlidersHorizontal className="size-4" />
           Filter
@@ -95,7 +95,7 @@ export function ShopClient() {
           id="sort"
           value={query.sort}
           onChange={(event) => update({ sort: event.target.value })}
-          className="h-12 cursor-pointer rounded-full border border-black/15 bg-white px-4 text-sm font-bold"
+          className="h-12 cursor-pointer rounded-full border-0 bg-surface px-4 text-sm font-bold shadow-sm transition-shadow hover:shadow"
         >
           <option value="newest">Newest</option>
           <option value="price-asc">Price, low to high</option>
@@ -111,11 +111,14 @@ export function ShopClient() {
               key={chip.key}
               type="button"
               onClick={() => update({ [chip.key]: null })}
-              className="inline-flex h-10 cursor-pointer items-center rounded-full bg-deep px-3 text-sm font-bold text-white"
+              className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-full border border-deep/20 bg-deep/10 px-3.5 text-sm font-bold text-deep transition-colors hover:bg-deep/15"
             >
               {chip.label}
               <span className="sr-only">Remove</span>
-              <span aria-hidden="true" className="ml-2">
+              <span
+                aria-hidden="true"
+                className="flex size-4 items-center justify-center rounded-full bg-deep/20 text-xs font-bold leading-none"
+              >
                 ×
               </span>
             </button>
@@ -125,6 +128,9 @@ export function ShopClient() {
 
       {rows.length === 0 ? (
         <div className="py-16">
+          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-surface text-muted">
+            <Package className="size-7" />
+          </div>
           <p className="font-display text-2xl font-medium">Nothing matches these filters.</p>
           <button
             type="button"
@@ -135,7 +141,7 @@ export function ShopClient() {
           </button>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-4 md:gap-x-5">
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
           {rows.map(({ product, variant }) => (
             <ProductCard key={product.slug} product={product} variant={variant} />
           ))}
@@ -300,9 +306,9 @@ function Choice({
       sx={{
         height: 48,
         fontWeight: 700,
-        bgcolor: selected ? "#135E4B" : "#fff",
+        bgcolor: selected ? "#02A6FB" : "#f8fafc",
         color: selected ? "#fff" : "#000",
-        borderColor: "rgba(0,0,0,0.15)",
+        borderColor: selected ? "transparent" : "rgba(0,0,0,0.08)",
       }}
     />
   );

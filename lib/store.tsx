@@ -30,6 +30,7 @@ type StoreValue = {
   add: (variantId: string, qty?: number) => void;
   setQty: (variantId: string, qty: number) => void;
   remove: (variantId: string) => void;
+  clear: () => void;
   placeOrder: (input: PlaceInput) => Order;
   attachReceipt: (orderId: string) => void;
   findOrder: (orderId: string, phone: string) => Order | null;
@@ -170,6 +171,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...snapshot,
         lines: snapshot.lines.filter((line) => line.variantId !== variantId),
       });
+    },
+    clear() {
+      commit({ ...snapshot, lines: [] });
     },
     placeOrder(input) {
       if (snapshot.lines.length === 0) throw new Error("Your cart is empty.");
