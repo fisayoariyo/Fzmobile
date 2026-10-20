@@ -149,7 +149,7 @@ export default function CartPage() {
                   </div>
                   <Link
                     href={`/product/${line.product.slug}?v=${line.variant.id}`}
-                    className="mt-2.5 inline-block text-xs font-medium text-[#1a73e8] hover:underline"
+                    className="mt-2.5 inline-block text-xs font-medium textapple-button hover:underline"
                   >
                     View details
                   </Link>
@@ -158,25 +158,25 @@ export default function CartPage() {
             ))}
           </ul>
 
-          <div className="mt-6 rounded-3xl border border-[#dadce0] bg-[#f8f9fa] p-6 shadow-xs">
+          <div className="mt-6 rounded-3xl border borderapple-line bgapple-band p-6 shadow-xs">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#5f6368]">Subtotal</span>
-              <span className="font-medium text-[#202124] tabular-nums">{naira(subtotal)}</span>
+              <span className="textapple-muted">Subtotal</span>
+              <span className="font-medium textapple-ink tabular-nums">{naira(subtotal)}</span>
             </div>
             <div className="mt-2.5 flex items-center justify-between text-sm">
-              <span className="text-[#5f6368]">Shipping</span>
-              <span className="font-medium text-[#202124]">Calculated at checkout</span>
+              <span className="textapple-muted">Shipping</span>
+              <span className="font-medium textapple-ink">Calculated at checkout</span>
             </div>
-            <div className="mt-4 flex items-center justify-between border-t border-[#dadce0] pt-4">
-              <span className="text-base font-medium text-[#202124]">Total</span>
-              <span className="text-2xl font-medium tabular-nums text-[#202124]">{naira(subtotal)}</span>
+            <div className="mt-4 flex items-center justify-between border-t borderapple-line pt-4">
+              <span className="text-base font-medium textapple-ink">Total</span>
+              <span className="text-2xl font-medium tabular-nums textapple-ink">{naira(subtotal)}</span>
             </div>
           </div>
 
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#dadce0] bg-white/95 p-4 backdrop-blur-md md:static md:mt-6 md:border-0 md:bg-transparent md:p-0">
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t borderapple-line bg-white/95 p-4 backdrop-blur-md md:static md:mt-6 md:border-0 md:bg-transparent md:p-0">
             <Link
               href="/checkout"
-              className="inline-flex h-13 w-full cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] text-sm font-medium text-white shadow-sm transition-all hover:bg-[#1557b0] active:scale-[0.99]"
+              className="inline-flex h-13 w-full cursor-pointer items-center justify-center rounded-full bgapple-button text-sm font-medium text-white shadow-sm transition-all hover:bgapple-button-hover active:scale-[0.99]"
             >
               Checkout
             </Link>

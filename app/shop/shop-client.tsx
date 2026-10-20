@@ -16,6 +16,15 @@ import { Package, SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
+/**
+ * Shop listing, restyled onto the Apple token set.
+ *
+ * Previously this page hard-coded ~40 Google-era hex values, so it looked
+ * like a different site from the Apple-styled landing and category pages.
+ * Everything now uses the shared tokens, and the two pill controls match
+ * Apple's pill radius and neutral fills.
+ */
+
 const prices = [
   { id: "under-500", label: "Under ₦500,000" },
   { id: "mid", label: "₦500,000 – ₦1,000,000" },
@@ -41,7 +50,11 @@ export function ShopClient() {
   };
 
   const rows = shopResults(query);
-  const title = query.category ? categoryById(query.category)?.name ?? "Devices" : query.deals ? "Flash Deals" : "All tech";
+  const title = query.category
+    ? (categoryById(query.category)?.name ?? "Devices")
+    : query.deals
+      ? "Flash Deals"
+      : "All tech";
   const storages = storageOptions(query.category);
 
   function update(next: Record<string, string | null>) {
@@ -60,34 +73,34 @@ export function ShopClient() {
       ? { key: "condition", label: conditionMeta[query.condition as Condition]?.label ?? query.condition }
       : null,
     query.brand ? { key: "brand", label: query.brand } : null,
-    query.price ? { key: "price", label: prices.find((item) => item.id === query.price)?.label ?? query.price } : null,
+    query.price
+      ? { key: "price", label: prices.find((item) => item.id === query.price)?.label ?? query.price }
+      : null,
     query.storage ? { key: "storage", label: query.storage } : null,
     query.deals ? { key: "deals", label: "Deals" } : null,
   ].filter(Boolean) as { key: string; label: string }[];
 
+  // Shared look for the two pill controls above the grid.
+  const pillControl =
+    "inline-flex h-9 cursor-pointer items-center gap-2 rounded-[980px] border border-apple-line bg-white px-4 text-[14px] tracking-[-0.016em] text-apple-ink transition-colors hover:border-apple-muted focus:border-apple-link focus:outline-none";
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+    <div className="store-wide py-8 md:py-12">
       <CategoryChips active={query.category ?? "all"} />
 
-      <div className="mt-8 flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-medium tracking-tight text-[#202124] md:text-4xl">{title}</h1>
-          <p className="mt-1 text-sm text-[#5f6368]">
-            {rows.length} {rows.length === 1 ? "device" : "devices"} available
-          </p>
-        </div>
+      <div className="mt-8">
+        <h1 className="type-headline">{title}</h1>
+        <p className="type-body mt-2 text-apple-muted">
+          {rows.length} {rows.length === 1 ? "device" : "devices"} available
+        </p>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2.5">
-        <button
-          type="button"
-          onClick={() => setFiltersOpen(true)}
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-[#dadce0] bg-white px-4 text-xs font-medium text-[#202124] shadow-xs transition-all hover:border-[#bdc1c6] hover:bg-[#f8f9fa] hover:shadow-sm"
-        >
-          <SlidersHorizontal className="size-3.5 text-[#5f6368]" />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={() => setFiltersOpen(true)} className={pillControl}>
+          <SlidersHorizontal className="size-4 text-apple-muted" />
           <span>Filters</span>
           {active.length > 0 && (
-            <span className="flex size-5 items-center justify-center rounded-full bg-[#c2e7ff] text-[11px] font-bold text-[#001d35]">
+            <span className="flex size-5 items-center justify-center rounded-full bg-apple-ink text-[11px] font-semibold text-white">
               {active.length}
             </span>
           )}
@@ -101,7 +114,7 @@ export function ShopClient() {
             id="sort"
             value={query.sort}
             onChange={(event) => update({ sort: event.target.value })}
-            className="h-10 cursor-pointer rounded-full border border-[#dadce0] bg-white px-4 pr-8 text-xs font-medium text-[#202124] shadow-xs transition-all hover:border-[#bdc1c6] hover:bg-[#f8f9fa] hover:shadow-sm focus:border-[#1a73e8] focus:outline-none"
+            className={`${pillControl} pr-8`}
           >
             <option value="newest">Sort by: Newest</option>
             <option value="price-asc">Price: Low to High</option>
@@ -112,28 +125,30 @@ export function ShopClient() {
       </div>
 
       {active.length > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-xs font-medium text-[#5f6368]">Active:</span>
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <span className="type-caption mr-1">Active:</span>
           {active.map((chip) => (
             <span
               key={chip.key}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#c2e7ff] bg-[#e8f0fe] pl-3 pr-1.5 text-xs font-medium text-[#174ea6]"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[980px] bg-apple-band pl-3 pr-1.5 text-[12px] tracking-[-0.01em] text-apple-ink"
             >
               <span>{chip.label}</span>
               <button
                 type="button"
                 onClick={() => update({ [chip.key]: null })}
-                className="flex size-5 cursor-pointer items-center justify-center rounded-full text-[#174ea6] transition-colors hover:bg-[#c2e7ff]"
+                className="flex size-5 cursor-pointer items-center justify-center rounded-full text-apple-muted transition-colors hover:bg-apple-line hover:text-apple-ink"
                 aria-label={`Remove filter ${chip.label}`}
               >
-                <span aria-hidden="true" className="text-sm font-bold leading-none">×</span>
+                <span aria-hidden="true" className="text-sm font-bold leading-none">
+                  ×
+                </span>
               </button>
             </span>
           ))}
           <button
             type="button"
             onClick={() => router.replace("/shop")}
-            className="ml-2 cursor-pointer text-xs font-medium text-[#1a73e8] hover:underline"
+            className="apple-link ml-2 cursor-pointer text-[12px]"
           >
             Clear all
           </button>
@@ -141,22 +156,24 @@ export function ShopClient() {
       )}
 
       {rows.length === 0 ? (
-        <div className="py-20 text-center">
-          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full border border-[#dadce0] bg-[#f8f9fa] text-[#5f6368]">
-            <Package className="size-8" />
+        <div className="py-24 text-center">
+          <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-apple-band text-apple-muted">
+            <Package className="size-7" />
           </div>
-          <p className="font-display text-2xl font-medium text-[#202124]">Nothing matches these filters.</p>
-          <p className="mt-2 text-sm text-[#5f6368]">Try selecting different categories, price ranges, or conditions.</p>
+          <p className="type-title">Nothing matches these filters.</p>
+          <p className="type-body mt-2 text-apple-muted">
+            Try selecting different categories, price ranges, or conditions.
+          </p>
           <button
             type="button"
             onClick={() => router.replace("/shop")}
-            className="mt-6 inline-flex h-11 cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] px-6 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1557b0]"
+            className="apple-button mt-8"
           >
             Clear filters
           </button>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        <div className="mt-10 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
           {rows.map(({ product, variant }) => (
             <ProductCard key={product.slug} product={product} variant={variant} />
           ))}
@@ -280,7 +297,7 @@ function FilterSheet({
 
       <button
         type="button"
-        className="mt-8 flex h-12 w-full cursor-pointer items-center justify-center rounded-full bg-[#1a73e8] text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1557b0]"
+        className="apple-button mt-8 w-full"
         onClick={() =>
           onApply({
             condition: draftCondition || null,
@@ -298,8 +315,8 @@ function FilterSheet({
 
 function FilterGroup({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <fieldset className="mt-5">
-      <legend className="mb-2 text-xs font-medium uppercase tracking-wider text-[#5f6368]">{label}</legend>
+    <fieldset className="mt-6">
+      <legend className="type-caption mb-2.5 uppercase tracking-wider">{label}</legend>
       <div className="flex flex-wrap gap-2">{children}</div>
     </fieldset>
   );
@@ -318,10 +335,10 @@ function Choice({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
+      className={`inline-flex cursor-pointer items-center justify-center rounded-[980px] border px-4 py-2 text-[14px] tracking-[-0.016em] transition-colors ${
         selected
-          ? "border-[#c2e7ff] bg-[#c2e7ff] text-[#001d35]"
-          : "border-[#dadce0] bg-white text-[#3c4043] hover:bg-[#f8f9fa]"
+          ? "border-apple-ink bg-apple-ink text-white"
+          : "border-apple-line bg-white text-apple-ink hover:border-apple-muted"
       }`}
     >
       {children}

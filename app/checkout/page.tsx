@@ -18,22 +18,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+/** Apple-aligned field styling: hairline border, band fill, link-blue focus. */
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
-    borderRadius: "16px",
-    bgcolor: "#f8fafc",
-    "& fieldset": { borderColor: "rgba(0,0,0,0.06)" },
-    "&:hover fieldset": { borderColor: "rgba(0,0,0,0.15)" },
-    "&.Mui-focused fieldset": { borderColor: "#02a6fb" },
+    borderRadius: "12px",
+    bgcolor: "#f5f5f7",
+    "& fieldset": { borderColor: "#d2d2d7" },
+    "&:hover fieldset": { borderColor: "#86868b" },
+    "&.Mui-focused fieldset": { borderColor: "#0071e3" },
   },
 };
 
 const selectSx = {
-  borderRadius: "16px",
-  bgcolor: "#f8fafc",
-  "& fieldset": { borderColor: "rgba(0,0,0,0.06)" },
-  "&:hover fieldset": { borderColor: "rgba(0,0,0,0.15)" },
-  "&.Mui-focused fieldset": { borderColor: "#02a6fb" },
+  borderRadius: "12px",
+  bgcolor: "#f5f5f7",
+  "& fieldset": { borderColor: "#d2d2d7" },
+  "&:hover fieldset": { borderColor: "#86868b" },
+  "&.Mui-focused fieldset": { borderColor: "#0071e3" },
 };
 
 export default function CheckoutPage() {

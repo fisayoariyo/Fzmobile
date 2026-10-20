@@ -23,11 +23,11 @@ export function ProductCard({
   return (
     <Link
       href={`/product/${product.slug}?v=${variant.id}`}
-      className="group block cursor-pointer rounded-2xl border border-line bg-white p-3 shadow-xs transition-all duration-300 hover:border-ink hover:shadow-md md:p-4"
+      className="group block cursor-pointer transition-opacity duration-300 hover:opacity-90"
     >
-      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-surface p-2">
+      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[18px] bg-apple-band p-4">
         {deal && (
-          <span className="absolute left-2 top-2 z-10 rounded-full bg-ink px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white shadow-xs">
+          <span className="absolute left-3 top-3 z-10 rounded-[980px] bg-apple-ink px-2.5 py-1 text-[11px] tracking-[-0.01em] text-white">
             {percentOff > 0 ? `-${percentOff}%` : "Special"}
           </span>
         )}
@@ -41,24 +41,24 @@ export function ProductCard({
           />
         </div>
       </div>
-      <div className="mt-3">
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-ink transition-colors group-hover:text-black">
+      <div className="mt-4">
+        <h3 className="line-clamp-2 text-[14px] font-semibold leading-[1.28571] tracking-[-0.016em] text-apple-ink">
           {product.name}
         </h3>
-        <p className="mt-0.5 truncate text-xs text-muted">
+        <p className="mt-1 truncate text-[12px] tracking-[-0.01em] text-apple-muted">
           {variant.colorName} · {variant.storage}
         </p>
         <div className="mt-2 flex flex-wrap items-baseline gap-1.5">
-          <span className="text-sm font-bold tabular-nums text-ink sm:text-base">
+          <span className="text-[14px] font-semibold tabular-nums tracking-[-0.016em] text-apple-ink">
             {naira(variant.price)}
           </span>
           {discounted && (
-            <span className="text-xs text-faint line-through tabular-nums">
+            <span className="text-[12px] tabular-nums tracking-[-0.01em] text-apple-muted line-through">
               {naira(variant.compareAt!)}
             </span>
           )}
         </div>
-        <p className="mt-1.5 text-[11px] text-faint">
+        <p className="mt-1.5 text-[12px] tracking-[-0.01em] text-apple-muted">
           {variant.stock <= 2
             ? variant.stock === 1
               ? "Last one in stock"

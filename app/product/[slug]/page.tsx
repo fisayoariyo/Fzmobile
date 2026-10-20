@@ -27,14 +27,14 @@ export default async function ProductPage({ params, searchParams }: Props) {
     <div>
       <BuyBox product={product} initialVariantId={v ?? ""} />
       <div className="mx-auto max-w-6xl px-4 pb-24 md:px-6 md:pb-16">
-        <h2 className="font-display text-2xl font-medium tracking-tight text-[#202124]">Technical Specifications</h2>
-        <p className="mt-2 max-w-2xl text-sm text-[#5f6368] leading-relaxed">{product.description}</p>
-        <div className="mt-6 max-w-2xl rounded-3xl border border-[#dadce0] bg-[#ffffff] p-6 sm:p-8">
-          <dl className="divide-y divide-[#dadce0]">
+        <h2 className="font-display text-2xl font-medium tracking-tight textapple-ink">Technical Specifications</h2>
+        <p className="mt-2 max-w-2xl text-sm textapple-muted leading-relaxed">{product.description}</p>
+        <div className="mt-6 max-w-2xl rounded-3xl border borderapple-line bgwhite p-6 sm:p-8">
+          <dl className="divide-y divideapple-line">
             {product.specs.map((spec) => (
               <div key={spec.label} className="flex justify-between gap-6 py-4 text-sm first:pt-0 last:pb-0">
-                <dt className="font-normal text-[#5f6368]">{spec.label}</dt>
-                <dd className="text-right font-medium text-[#202124]">{spec.value}</dd>
+                <dt className="font-normal textapple-muted">{spec.label}</dt>
+                <dd className="text-right font-medium textapple-ink">{spec.value}</dd>
               </div>
             ))}
           </dl>
