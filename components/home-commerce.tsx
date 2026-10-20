@@ -3,7 +3,9 @@
 import { ProductCard } from "@/components/product-card";
 import { ProductMedia } from "@/components/product-media";
 import { SearchPill } from "@/components/search-pill";
+import { StoreShowroom3D } from "@/components/store-showroom-3d";
 import { flashDeals, getProduct, products } from "@/lib/catalog";
+import { naira } from "@/lib/format";
 import { productImage } from "@/lib/media";
 import { useStore } from "@/lib/store";
 import type { Product, Variant } from "@/lib/types";
@@ -15,7 +17,9 @@ import {
   MoreHorizontal,
   Shield,
   Smartphone,
+  Sparkles,
   Speaker,
+  Store,
   Tablet,
   Truck,
 } from "lucide-react";
@@ -34,6 +38,8 @@ const categories = [
 export function HomeCommerce() {
   const { count } = useStore();
   const [tab, setTab] = useState<"top" | "new">("top");
+  const [viewMode, setViewMode] = useState<"3d" | "classic">("3d");
+  const [selectedShowroomIndex, setSelectedShowroomIndex] = useState(0);
 
   const deals = flashDeals();
   const topPicks = deals.slice(0, 8);
@@ -87,9 +93,95 @@ export function HomeCommerce() {
         <SearchPill />
       </div>
 
-      {/* Hero Section */}
-      {hero && heroVariant && (
-        <section className="relative mt-4 md:mt-0 rounded-3xl bg-[#f8fafd] border border-[#e3edf7] p-8 md:p-12 lg:p-16 overflow-hidden">
+      {/* Mode Switcher: 3D Showroom vs Classic Store */}
+      <div className="mt-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 rounded-full border border-[#dadce0] bg-[#f8f9fa] p-1 shadow-xs">
+          <button
+            type="button"
+            onClick={() => setViewMode("3d")}
+            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === "3d"
+                ? "bg-[#1a73e8] text-white shadow-xs"
+                : "text-[#5f6368] hover:text-[#202124]"
+            }`}
+          >
+            <Sparkles className="size-3.5" />
+            <span>3D Showroom</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("classic")}
+            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === "classic"
+                ? "bg-[#1a73e8] text-white shadow-xs"
+                : "text-[#5f6368] hover:text-[#202124]"
+            }`}
+          >
+            <Store className="size-3.5" />
+            <span>Standard Store</span>
+          </button>
+        </div>
+
+        <span className="hidden text-xs text-[#5f6368] sm:inline">
+          Interactive WebGL Flagship Store
+        </span>
+      </div>
+
+      {/* 3D Interactive Showroom View */}
+      {viewMode === "3d" && (
+        <section className="mt-4 animate-scale-up">
+          <StoreShowroom3D
+            featured={topPicks}
+            selectedIndex={selectedShowroomIndex}
+            onSelectProduct={(idx) => setSelectedShowroomIndex(idx)}
+          />
+
+          {/* Quick Inspector Strip for the Selected 3D Phone */}
+          {topPicks[selectedShowroomIndex] && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#dadce0] bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-[#f8f9fa] p-1">
+                  <ProductMedia
+                    art={topPicks[selectedShowroomIndex].product.art}
+                    color={topPicks[selectedShowroomIndex].variant.colorHex}
+                    image={productImage(
+                      topPicks[selectedShowroomIndex].product.image,
+                      topPicks[selectedShowroomIndex].variant.image
+                    )}
+                    alt={topPicks[selectedShowroomIndex].product.name}
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#202124]">
+                    {topPicks[selectedShowroomIndex].product.name}
+                  </h3>
+                  <p className="text-xs text-[#5f6368]">
+                    {topPicks[selectedShowroomIndex].variant.colorName} ·{" "}
+                    {topPicks[selectedShowroomIndex].variant.storage}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <span className="text-base font-semibold tabular-nums text-[#202124]">
+                  {naira(topPicks[selectedShowroomIndex].variant.price)}
+                </span>
+                <Link
+                  href={`/product/${topPicks[selectedShowroomIndex].product.slug}?v=${topPicks[selectedShowroomIndex].variant.id}`}
+                  className="rounded-full bg-[#1a73e8] px-5 py-2 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#1557b0]"
+                >
+                  Inspect & Buy →
+                </Link>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Classic Editorial Hero Section */}
+      {viewMode === "classic" && hero && heroVariant && (
+        <section className="relative mt-4 md:mt-0 rounded-3xl bg-[#f8fafd] border border-[#e3edf7] p-8 md:p-12 lg:p-16 overflow-hidden animate-scale-up">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
             <div className="relative z-10 max-w-xl">
               <span className="inline-block text-[#1a73e8] font-semibold text-xs tracking-wider uppercase mb-2">
