@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { StoreProvider } from "@/lib/store";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -29,15 +30,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${jakarta.variable} font-sans h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-[#ffffff] font-sans text-[#202124]">
+      <body className="flex min-h-full flex-col bg-white font-sans text-ink">
         <MuiProvider>
           <StoreProvider>
             <SiteHeader />
-            <main className="flex-1 pb-16 md:pb-0">{children}</main>
-            <div className="hidden md:block">
-              <SiteFooter />
-            </div>
-            <MobileTabBar />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+            <Suspense fallback={null}>
+              <MobileTabBar />
+            </Suspense>
           </StoreProvider>
         </MuiProvider>
       </body>

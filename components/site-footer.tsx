@@ -1,7 +1,11 @@
+"use client";
+
 import { WhatsAppIcon } from "@/components/icons";
-import { whatsappHref } from "@/lib/site";
+import { BANK, whatsappHref } from "@/lib/site";
+import { ChevronDown, Landmark, MapPin, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 const columns = [
   {
@@ -11,6 +15,7 @@ const columns = [
       ["Phones", "/shop?category=phones"],
       ["Laptops", "/shop?category=laptops"],
       ["Audio", "/shop?category=audio"],
+      ["Power", "/shop?category=power"],
       ["Flash deals", "/shop?deals=1"],
     ],
   },
@@ -39,10 +44,30 @@ const columns = [
   },
 ] as const;
 
-export function SiteFooter() {
+function FooterLink({ label, href }: { label: string; href: string }) {
+  const className =
+    "block py-1.5 text-sm text-muted transition-colors hover:text-brand md:py-1 md:text-xs";
+
+  if (href.startsWith("http")) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className={className}>
+        {label}
+      </a>
+    );
+  }
   return (
-    <footer className="mt-auto border-t border-[#dadce0] bg-[#f8f9fa] text-[#202124]">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[1.2fr_2fr] md:gap-16 md:px-6 md:py-16">
+    <Link href={href} className={className}>
+      {label}
+    </Link>
+  );
+}
+
+export function SiteFooter() {
+  const [openColumn, setOpenColumn] = useState<string | null>(null);
+
+  return (
+    <footer className="mt-auto border-t border-line bg-surface text-ink">
+      <div className="store-container grid gap-10 py-12 md:grid-cols-[1.1fr_2fr] md:gap-16 md:py-16">
         <div>
           <Image
             src="/brand/logo-black.svg"
@@ -51,46 +76,61 @@ export function SiteFooter() {
             height={34}
             unoptimized
           />
-          <p className="mt-4 max-w-xs text-xs leading-relaxed text-[#5f6368] md:text-sm">
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
             Authentic tech in Nigeria. Exact colour, storage, and grade — prices in Naira.
           </p>
           <a
             href={whatsappHref()}
             target="_blank"
             rel="noreferrer"
-            className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#dadce0] bg-white px-5 py-2.5 text-xs font-medium text-[#1a73e8] shadow-xs transition-colors hover:bg-[#f1f3f4]"
+            className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-sm font-medium text-brand shadow-xs transition-colors hover:bg-hover"
           >
             <WhatsAppIcon className="size-4 text-[#25D366]" />
             Chat on WhatsApp
           </a>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+        {/* Mobile: accordions. Desktop: static columns. */}
+        <div className="md:hidden">
+          {columns.map((column) => {
+            const open = openColumn === column.title;
+            return (
+              <div key={column.title} className="border-b border-line/70 last:border-b-0">
+                <button
+                  type="button"
+                  onClick={() => setOpenColumn(open ? null : column.title)}
+                  aria-expanded={open}
+                  className="flex w-full cursor-pointer items-center justify-between py-3.5 text-left"
+                >
+                  <span className="text-sm font-semibold text-ink">{column.title}</span>
+                  <ChevronDown
+                    className={`size-4 text-muted transition-transform duration-200 ${
+                      open ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {open && (
+                  <div className="pb-3">
+                    {column.links.map(([label, href]) => (
+                      <FooterLink key={href} label={label} href={href} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="hidden grid-cols-4 gap-8 md:grid">
           {columns.map((column) => (
             <div key={column.title}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#202124]">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink">
                 {column.title}
               </p>
-              <ul className="space-y-1">
+              <ul>
                 {column.links.map(([label, href]) => (
                   <li key={href}>
-                    {href.startsWith("http") ? (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block text-xs leading-6 text-[#5f6368] transition-colors hover:text-[#1a73e8]"
-                      >
-                        {label}
-                      </a>
-                    ) : (
-                      <Link
-                        href={href}
-                        className="block text-xs leading-6 text-[#5f6368] transition-colors hover:text-[#1a73e8]"
-                      >
-                        {label}
-                      </Link>
-                    )}
+                    <FooterLink label={label} href={href} />
                   </li>
                 ))}
               </ul>
@@ -98,10 +138,37 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="border-t border-[#dadce0] py-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-xs text-[#70757a] sm:flex-row md:px-6">
+
+      {/* Payment & trust row */}
+      <div className="border-t border-line">
+        <div className="store-container flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-muted">
+            <span className="inline-flex items-center gap-2">
+              <Landmark className="size-4 text-brand" />
+              Bank transfer · {BANK.bank}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck className="size-4 text-good" />
+              Receipt verified before dispatch
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="size-4 text-muted" />
+              Lagos, Nigeria
+            </span>
+          </div>
+          <Link
+            href="/policies/delivery"
+            className="text-xs font-medium text-brand hover:underline"
+          >
+            How delivery &amp; payment work →
+          </Link>
+        </div>
+      </div>
+
+      <div className="border-t border-line py-6 pb-28 md:pb-6">
+        <div className="store-container flex flex-col items-center justify-between gap-2 text-xs text-faint sm:flex-row">
           <p>© {new Date().getFullYear()} Fzmobile. All rights reserved.</p>
-          <p>Lagos, Nigeria · Authentic Tech Store</p>
+          <p>Authentic Tech Store · Nigeria</p>
         </div>
       </div>
     </footer>

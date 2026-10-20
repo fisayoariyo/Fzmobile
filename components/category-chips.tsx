@@ -21,10 +21,10 @@ export function CategoryChips({ active }: { active?: string }) {
           <Link
             key={chip.id}
             href={chip.href}
-            className={`inline-flex shrink-0 items-center justify-center rounded-full px-4 py-2 text-xs font-medium border transition-colors ${
+            className={`inline-flex shrink-0 items-center justify-center rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
               selected
-                ? "bg-[#c2e7ff] text-[#001d35] border-[#c2e7ff]"
-                : "bg-white text-[#3c4043] border-[#dadce0] hover:bg-[#f8f9fa]"
+                ? "border-pill bg-pill text-brand-ink"
+                : "border-line bg-white text-ink hover:bg-surface"
             }`}
           >
             {chip.label}

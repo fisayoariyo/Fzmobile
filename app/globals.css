@@ -3,14 +3,51 @@
 @theme inline {
   --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
   --font-display: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
-  --color-deep: #1a73e8;
-  --color-fresh: #0b57d0;
-  --color-soft: #c2e7ff;
-  --color-mist: #e8f0fe;
+
+  /* Core surfaces & text */
+  --color-ink: #202124;
   --color-muted: #5f6368;
+  --color-faint: #70757a;
   --color-line: #dadce0;
   --color-surface: #f8f9fa;
-  --color-accent: #137333;
+  --color-hover: #f1f3f4;
+
+  /* Brand */
+  --color-brand: #1a73e8;
+  --color-brand-ink: #001d35;
+  --color-brand-strong: #1557b0;
+  --color-brand-soft: #e8f0fe;
+  --color-pill: #c2e7ff;
+
+  /* Semantic */
+  --color-good: #137333;
+  --color-good-soft: #e6f4ea;
+  --color-deal: #b3261e;
+
+  /* Layout */
+  --spacing-gutter: 1rem;
+  --container-store: 1200px;
+}
+
+/* One shared grid so header, page body and footer align on the same edges. */
+@utility store-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 1rem;
+
+  @media (min-width: 768px) {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* Bottom clearance for the floating mobile tab bar. */
+@utility tab-safe {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+
+  @media (min-width: 768px) {
+    padding-bottom: 0;
+  }
 }
 
 html {

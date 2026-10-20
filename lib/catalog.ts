@@ -1664,7 +1664,7 @@ export function searchProducts(query: string) {
 
   // Parse natural budget expressions like: "under 800k", "500k", "700,000", "< 600k", "below 1m"
   let maxBudget: number | null = null;
-  let minBudget: number | null = null;
+  const minBudget: number | null = null;
 
   const kMatch = raw.match(/(?:under|below|less than|max|<=?)\s*(\d+(?:\.\d+)?)\s*k\b/i) ||
                  raw.match(/(\d+(?:\.\d+)?)\s*k\b/i);

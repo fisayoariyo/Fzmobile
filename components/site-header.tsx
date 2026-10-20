@@ -1,42 +1,50 @@
 "use client";
 
 import { WhatsAppIcon } from "@/components/icons";
-import { SearchPill } from "@/components/search-pill";
+import { StoreSearch } from "@/components/store-search";
 import { Sheet } from "@/components/sheet";
 import { whatsappHref } from "@/lib/site";
 import { useStore } from "@/lib/store";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { ChevronDown, Menu, Search, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
-
-function useIsClient() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-}
+import { useEffect, useRef, useState } from "react";
 
 const desktopNav = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
   { href: "/shop?deals=1", label: "Deals" },
   { href: "/friends", label: "Friends" },
   { href: "/track", label: "Track" },
 ] as const;
 
-const shopLinks = [
+const megaCategories = [
+  { href: "/shop?category=phones", label: "Phones", hint: "iPhone · Pixel · flagship" },
+  { href: "/shop?category=laptops", label: "Laptops", hint: "MacBook · HP · Dell" },
+  { href: "/shop?category=audio", label: "Audio", hint: "AirPods · JBL · Beats" },
+  { href: "/shop?category=power", label: "Power", hint: "Adapters · charging" },
+  { href: "/shop?category=creation", label: "Creation", hint: "iPad · Pencil · Meta" },
+  { href: "/shop?category=gaming", label: "Gaming", hint: "Consoles · decks" },
+] as const;
+
+const megaBrands = [
+  { href: "/shop?brand=Apple", label: "Apple" },
+  { href: "/shop?brand=Google", label: "Google" },
+  { href: "/shop?brand=Samsung", label: "Samsung" },
+  { href: "/shop?brand=JBL", label: "JBL" },
+  { href: "/shop?brand=HP", label: "HP" },
+  { href: "/shop?brand=Dell", label: "Dell" },
+] as const;
+
+const megaBudgets = [
+  { href: "/shop?q=under%20500k", label: "Under ₦500k" },
+  { href: "/shop?q=under%20800k", label: "Under ₦800k" },
+  { href: "/shop?q=under%201m", label: "Under ₦1m" },
+  { href: "/shop?deals=1", label: "Flash deals" },
+] as const;
+
+const mobileShopLinks = [
   { href: "/shop", label: "All tech", strong: true },
-  { href: "/shop?category=phones&brand=Apple", label: "Apple" },
-  { href: "/shop?category=phones&brand=Google", label: "Google Pixel" },
-  { href: "/shop?category=phones", label: "All phones" },
-  { href: "/shop?category=laptops", label: "Laptops" },
-  { href: "/shop?category=audio", label: "Audio" },
-  { href: "/shop?category=power", label: "Power" },
-  { href: "/shop?category=creation", label: "Creation" },
-  { href: "/shop?category=gaming", label: "Gaming" },
+  ...megaCategories,
 ] as const;
 
 const supportLinks = [
@@ -54,65 +62,191 @@ const policyLinks = [
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const isClient = useIsClient();
   const { count } = useStore();
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const [searchPath, setSearchPath] = useState<string | null>(null);
+  const [megaOpen, setMegaOpen] = useState(false);
+  const megaRef = useRef<HTMLDivElement>(null);
+  const megaTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Derive overlay state from the pathname they were opened on, so navigating
+  // closes them without an effect that sets state.
   const menuOpen = menuPath === pathname;
   const searchOpen = searchPath === pathname;
 
-  function openSearch() {
-    const field = document.getElementById("site-search") as HTMLInputElement | null;
-    if (field && !searchOpen) {
-      field.focus();
-      field.scrollIntoView({ block: "center" });
-      return;
+  // Escape closes the mega-menu; outside click closes it too.
+  useEffect(() => {
+    if (!megaOpen) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setMegaOpen(false);
     }
-    setSearchPath(pathname);
+    function onPointer(event: MouseEvent) {
+      if (megaRef.current && !megaRef.current.contains(event.target as Node)) {
+        setMegaOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+    };
+  }, [megaOpen]);
+
+  // Close the menu on hover-out of the whole mega-menu region.
+  useEffect(() => {
+    return () => {
+      if (megaTimer.current) clearTimeout(megaTimer.current);
+    };
+  }, []);
+
+  function closeMenuSoon() {
+    if (megaTimer.current) clearTimeout(megaTimer.current);
+    megaTimer.current = setTimeout(() => setMegaOpen(false), 140);
   }
 
-  function closeMenu() {
-    setMenuPath(null);
-  }
-
-  const hideOnMobileHome = isClient && pathname === "/";
+  const shopActive = pathname.startsWith("/shop");
 
   return (
-    <header
-      className={`sticky top-0 z-40 border-b border-[#dadce0]/60 bg-white/95 backdrop-blur-md ${
-        hideOnMobileHome ? "hidden md:block" : ""
-      }`}
-    >
-      <div className="mx-auto flex h-16 max-w-6xl items-center px-4 md:h-18 md:px-6">
+    <header className="sticky top-0 z-40 border-b border-line/70 bg-white/95 backdrop-blur-md">
+      <div className="store-container flex h-16 items-center gap-2 md:h-18 md:gap-4">
         <button
           type="button"
-          className="flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4] md:hidden"
-          aria-label="Menu"
+          className="-ml-2 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-hover md:hidden"
           onClick={() => setMenuPath(pathname)}
+          aria-label="Open menu"
+          aria-expanded={menuOpen}
         >
           <Menu className="size-5" />
         </button>
-        <Link href="/" className="ml-1 flex items-center md:ml-0" aria-label="Fzmobile home">
-          <Image src="/brand/logo-black.svg" alt="" width={118} height={32} priority unoptimized />
+
+        <Link href="/" className="flex shrink-0 items-center" aria-label="Fzmobile home">
+          <Image
+            src="/brand/logo-black.svg"
+            alt=""
+            width={112}
+            height={30}
+            priority
+            unoptimized
+          />
         </Link>
 
-        <nav className="ml-8 hidden items-center gap-1.5 md:flex">
+        {/* Desktop navigation */}
+        <nav className="hidden items-center gap-1 md:flex">
+          <div
+            ref={megaRef}
+            className="relative"
+            onMouseEnter={() => {
+              if (megaTimer.current) clearTimeout(megaTimer.current);
+              setMegaOpen(true);
+            }}
+            onMouseLeave={closeMenuSoon}
+          >
+            <button
+              type="button"
+              aria-expanded={megaOpen}
+              aria-haspopup="true"
+              onClick={() => setMegaOpen((open) => !open)}
+              className={`flex cursor-pointer items-center gap-1 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                shopActive || megaOpen
+                  ? "bg-brand-soft font-semibold text-brand"
+                  : "text-muted hover:bg-surface hover:text-brand"
+              }`}
+            >
+              Shop
+              <ChevronDown
+                className={`size-4 transition-transform duration-200 ${
+                  megaOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {megaOpen && (
+              <div className="absolute left-0 top-full z-50 pt-2">
+                <div className="animate-scale-up w-[620px] rounded-3xl border border-line bg-white p-5 shadow-[0_12px_40px_rgba(60,64,67,0.18)]">
+                  <div className="grid grid-cols-[1.6fr_1fr] gap-6">
+                    <div>
+                      <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
+                        Categories
+                      </p>
+                      <ul className="grid grid-cols-2 gap-0.5">
+                        {megaCategories.map((category) => (
+                          <li key={category.href}>
+                            <Link
+                              href={category.href}
+                              className="block rounded-xl px-2 py-2 transition-colors hover:bg-surface"
+                            >
+                              <span className="block text-sm font-medium text-ink">
+                                {category.label}
+                              </span>
+                              <span className="block truncate text-[11px] text-faint">
+                                {category.hint}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="border-l border-line pl-6">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
+                        By brand
+                      </p>
+                      <ul className="mb-4 flex flex-wrap gap-1.5">
+                        {megaBrands.map((brand) => (
+                          <li key={brand.href}>
+                            <Link
+                              href={brand.href}
+                              className="inline-flex rounded-full border border-line px-3 py-1 text-xs text-ink transition-colors hover:border-brand hover:bg-brand-soft hover:text-brand"
+                            >
+                              {brand.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
+                        By budget
+                      </p>
+                      <ul className="flex flex-col gap-0.5">
+                        {megaBudgets.map((budget) => (
+                          <li key={budget.href}>
+                            <Link
+                              href={budget.href}
+                              className="block rounded-lg px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-brand"
+                            >
+                              {budget.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/shop"
+                    className="mt-4 block rounded-2xl bg-surface px-4 py-2.5 text-center text-sm font-semibold text-brand transition-colors hover:bg-brand-soft"
+                  >
+                    Browse all tech →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           {desktopNav.map((link) => {
             const pathOnly = link.href.split("?")[0];
             const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : link.href.includes("deals")
-                  ? false
-                  : pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
+              !link.href.includes("deals") &&
+              (pathname === pathOnly || pathname.startsWith(`${pathOnly}/`));
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-[#e8f0fe] font-semibold text-[#1a73e8]"
-                    : "text-[#5f6368] hover:bg-[#f8f9fa] hover:text-[#1a73e8]"
+                    ? "bg-brand-soft font-semibold text-brand"
+                    : "text-muted hover:bg-surface hover:text-brand"
                 }`}
               >
                 {link.label}
@@ -121,32 +255,37 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        {/* Inline desktop search — the primary way to find a device */}
+        <div className="ml-auto hidden min-w-0 flex-1 justify-end md:flex">
+          <StoreSearch />
+        </div>
+
+        <div className="ml-auto flex items-center gap-1 md:ml-0 md:gap-1.5">
           <button
             type="button"
-            className="flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4]"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-hover md:hidden"
             aria-label="Search"
-            onClick={openSearch}
+            onClick={() => setSearchPath(pathname)}
           >
             <Search className="size-5" />
           </button>
           <a
             href={whatsappHref()}
-            className="hidden size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4] sm:flex"
+            className="hidden size-10 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-hover md:flex"
             aria-label="WhatsApp support"
             target="_blank"
             rel="noreferrer"
           >
-            <WhatsAppIcon className="size-5 text-[#5f6368]" />
+            <WhatsAppIcon className="size-5 text-muted" />
           </a>
           <Link
             href="/cart"
-            className="relative flex size-10 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-[#f1f3f4]"
+            className="relative flex size-10 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-hover"
             aria-label={count > 0 ? `Cart, ${count} ${count === 1 ? "item" : "items"}` : "Cart"}
           >
             <ShoppingBag className="size-5" />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1a73e8] px-1.5 text-[10px] font-semibold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1.5 text-[10px] font-semibold text-white">
                 {count}
               </span>
             )}
@@ -154,21 +293,26 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <Sheet open={menuOpen} title="Menu" onClose={closeMenu}>
+      {/* Mobile menu sheet */}
+      <Sheet open={menuOpen} title="Menu" onClose={() => setMenuPath(null)}>
         <nav className="flex flex-col py-2">
-          <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
+          <div className="px-3 pb-3">
+            <StoreSearch autoFocus autoComplete />
+          </div>
+
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
             Shop
           </p>
-          <div className="flex flex-col gap-0.5">
-            {shopLinks.map((link) => (
+          <div className="grid grid-cols-2 gap-1.5 px-3">
+            {mobileShopLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={closeMenu}
-                className={`flex h-11 items-center rounded-xl px-3 text-sm transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8] ${
+                onClick={() => setMenuPath(null)}
+                className={`flex h-11 items-center rounded-xl border px-3 text-sm transition-colors ${
                   "strong" in link && link.strong
-                    ? "font-semibold text-[#202124]"
-                    : "font-normal text-[#5f6368]"
+                    ? "border-brand bg-brand-soft font-semibold text-brand"
+                    : "border-line text-ink hover:bg-surface"
                 }`}
               >
                 {link.label}
@@ -176,17 +320,17 @@ export function SiteHeader() {
             ))}
           </div>
 
-          <p className="mt-5 px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
+          <p className="mt-5 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
             Support
           </p>
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 px-3">
             {supportLinks.map((link) =>
               "external" in link && link.external ? (
                 <a
                   key={link.label}
                   href={link.href}
-                  onClick={closeMenu}
-                  className="flex h-11 items-center rounded-xl px-3 text-sm font-normal text-[#5f6368] transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8]"
+                  onClick={() => setMenuPath(null)}
+                  className="flex h-11 items-center rounded-xl px-3 text-sm text-muted transition-colors hover:bg-surface hover:text-brand"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -196,12 +340,8 @@ export function SiteHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={closeMenu}
-                  className={`flex h-11 items-center rounded-xl px-3 text-sm transition-colors hover:bg-[#f8f9fa] hover:text-[#1a73e8] ${
-                    "strong" in link && link.strong
-                      ? "font-semibold text-[#202124]"
-                      : "font-normal text-[#5f6368]"
-                  }`}
+                  onClick={() => setMenuPath(null)}
+                  className="flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink transition-colors hover:bg-surface hover:text-brand"
                 >
                   {link.label}
                 </Link>
@@ -209,7 +349,7 @@ export function SiteHeader() {
             )}
           </div>
 
-          <p className="mt-5 px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[#5f6368]">
+          <p className="mt-5 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-faint">
             Policies
           </p>
           <div className="flex flex-wrap gap-2 px-3 pt-1">
@@ -217,8 +357,8 @@ export function SiteHeader() {
               <Link
                 key={href}
                 href={href}
-                onClick={closeMenu}
-                className="rounded-full bg-[#f8f9fa] px-3.5 py-1.5 text-xs text-[#5f6368] transition-colors hover:bg-[#e8f0fe] hover:text-[#1a73e8]"
+                onClick={() => setMenuPath(null)}
+                className="rounded-full bg-surface px-3.5 py-1.5 text-xs text-muted transition-colors hover:bg-brand-soft hover:text-brand"
               >
                 {label}
               </Link>
@@ -227,9 +367,20 @@ export function SiteHeader() {
         </nav>
       </Sheet>
 
+      {/* Mobile search sheet */}
       <Sheet open={searchOpen} title="Search" onClose={() => setSearchPath(null)}>
-        <div className="py-2">
-          <SearchPill autoFocus />
+        <div className="flex items-start gap-2 py-2">
+          <div className="min-w-0 flex-1">
+            <StoreSearch autoFocus autoComplete />
+          </div>
+          <button
+            type="button"
+            onClick={() => setSearchPath(null)}
+            className="mt-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-hover"
+            aria-label="Close search"
+          >
+            <X className="size-5" />
+          </button>
         </div>
       </Sheet>
     </header>
