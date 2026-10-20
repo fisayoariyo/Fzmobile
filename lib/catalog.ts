@@ -1,4 +1,4 @@
-import { sellPrice } from "./pricing";
+import { sellPrice, sellPriceUnlisted } from "./pricing";
 import type { CategoryId, Condition, Friend, Product, Variant } from "./types";
 
 export const CATEGORIES: { id: CategoryId; label: string; name: string }[] = [
@@ -94,10 +94,10 @@ const IMG = {
 
 type RawVariant = Omit<Variant, "price"> & { cost: number; price?: number };
 
-function priced(variants: RawVariant[]): Variant[] {
+function priced(variants: RawVariant[], listed = true): Variant[] {
   return variants.map((variant) => ({
     ...variant,
-    price: sellPrice(variant.cost),
+    price: listed ? sellPrice(variant.cost) : sellPriceUnlisted(variant.cost),
   }));
 }
 
@@ -112,7 +112,7 @@ function phone(
     warranty,
     optionLabel: "Storage",
     ...partial,
-    variants: priced(partial.variants),
+    variants: priced(partial.variants, partial.listed !== false),
   };
 }
 
@@ -654,6 +654,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-16-pro-max",
+    listed: false,
     name: "iPhone 16 Pro Max",
     brand: "Apple",
     image: IMG.iphone16ProMax,
@@ -677,6 +678,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-14-pro-max",
+    listed: false,
     name: "iPhone 14 Pro Max",
     brand: "Apple",
     image: IMG.iphone14ProMax,
@@ -709,6 +711,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-13-pro-max",
+    listed: false,
     name: "iPhone 13 Pro Max",
     brand: "Apple",
     image: IMG.iphone13ProMax,
@@ -738,6 +741,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-13-pro",
+    listed: false,
     name: "iPhone 13 Pro",
     brand: "Apple",
     image: IMG.iphone13Pro,
@@ -767,6 +771,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-11-pro-max",
+    listed: false,
     name: "iPhone 11 Pro Max",
     brand: "Apple",
     image: IMG.iphone11ProMax,
@@ -796,6 +801,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-11-pro",
+    listed: false,
     name: "iPhone 11 Pro",
     brand: "Apple",
     image: IMG.iphone11Pro,
@@ -825,6 +831,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-xr",
+    listed: false,
     name: "iPhone XR",
     brand: "Apple",
     image: IMG.iphoneXr,
@@ -854,6 +861,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-se-3rd-gen",
+    listed: false,
     name: "iPhone SE (3rd Gen)",
     brand: "Apple",
     image: IMG.iphoneSe3,
@@ -886,6 +894,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "iphone-se-2nd-gen",
+    listed: false,
     name: "iPhone SE (2nd Gen)",
     brand: "Apple",
     image: IMG.iphoneSe2,
@@ -918,6 +927,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-9-pro-xl",
+    listed: false,
     name: "Google Pixel 9 Pro XL",
     brand: "Google",
     image: IMG.pixel9ProXl,
@@ -953,6 +963,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-9",
+    listed: false,
     name: "Google Pixel 9",
     brand: "Google",
     image: IMG.pixel9,
@@ -974,6 +985,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-8-pro",
+    listed: false,
     name: "Google Pixel 8 Pro",
     brand: "Google",
     image: IMG.pixel8Pro,
@@ -1019,6 +1031,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-8",
+    listed: false,
     name: "Google Pixel 8",
     brand: "Google",
     image: IMG.pixel8,
@@ -1061,6 +1074,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-7-pro",
+    listed: false,
     name: "Google Pixel 7 Pro",
     brand: "Google",
     image: IMG.pixel7Pro,
@@ -1102,6 +1116,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-7a",
+    listed: false,
     name: "Google Pixel 7a",
     brand: "Google",
     image: IMG.pixel7a,
@@ -1124,6 +1139,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-7",
+    listed: false,
     name: "Google Pixel 7",
     brand: "Google",
     image: IMG.pixel7,
@@ -1145,6 +1161,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-6-pro",
+    listed: false,
     name: "Google Pixel 6 Pro",
     brand: "Google",
     image: IMG.pixel6Pro,
@@ -1166,6 +1183,7 @@ export const products: Product[] = [
   }),
   phone({
     slug: "google-pixel-6",
+    listed: false,
     name: "Google Pixel 6",
     brand: "Google",
     image: IMG.pixel6,

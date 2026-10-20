@@ -52,6 +52,12 @@ export type Product = {
   specs: { label: string; value: string }[];
   createdAt: string;
   variants: Variant[];
+  /**
+   * Whether ops quoted this product on the current price list. Listed
+   * products carry the standing uplift; unlisted ones are passed through
+   * unchanged so an unquoted price is never silently raised.
+   */
+  listed?: boolean;
 };
 
 export type Friend = {
