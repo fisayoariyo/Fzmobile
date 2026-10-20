@@ -101,18 +101,49 @@ export function HomeCommerce() {
               <p className="text-base md:text-lg text-[#5f6368] max-w-lg mt-4 font-normal leading-relaxed">
                 Experience premium phones, tablets, and audio with authentic manufacturer warranties and nationwide delivery.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="mt-6 max-w-lg">
+                <SearchPill variant="hero" />
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-medium text-[#5f6368]">Quick find:</span>
+                  <Link
+                    href="/shop?q=under%20500k"
+                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
+                  >
+                    Under ₦500k
+                  </Link>
+                  <Link
+                    href="/shop?q=under%20800k"
+                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
+                  >
+                    Under ₦800k
+                  </Link>
+                  <Link
+                    href="/shop?q=iphone"
+                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
+                  >
+                    iPhones
+                  </Link>
+                  <Link
+                    href="/shop?q=pixel"
+                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
+                  >
+                    Pixels
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/shop?category=phones"
-                  className="rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white px-7 py-3 text-sm font-medium transition-all shadow-sm"
+                  className="rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white px-6 py-2.5 text-xs font-medium transition-all shadow-sm"
                 >
-                  Browse phones
+                  Browse all phones
                 </Link>
                 <Link
                   href="/shop?deals=1"
-                  className="rounded-full border border-[#dadce0] hover:bg-black/[0.03] text-[#1a73e8] px-7 py-3 text-sm font-medium transition-all"
+                  className="rounded-full border border-[#dadce0] hover:bg-black/[0.03] text-[#1a73e8] px-6 py-2.5 text-xs font-medium transition-all"
                 >
-                  Explore all deals
+                  Explore deals
                 </Link>
               </div>
             </div>

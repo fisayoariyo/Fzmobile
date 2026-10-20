@@ -51,9 +51,9 @@ export function SearchPill({
             value={query}
             autoFocus={autoFocus}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search phones, laptops, audio..."
+            placeholder="Search e.g. 'iPhone under 800k', 'Pixel 8', 'Macbook'..."
             autoComplete="off"
-            aria-label="Search phones, laptops, audio"
+            aria-label="Search devices or budget"
             aria-controls={listId}
             className="ml-3 h-full w-full bg-transparent text-sm font-normal text-[#202124] placeholder-[#70757a] outline-none md:text-base"
           />

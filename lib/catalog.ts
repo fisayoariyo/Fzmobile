@@ -1659,14 +1659,55 @@ export function getVariant(variantId: string) {
 }
 
 export function searchProducts(query: string) {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
+  const raw = query.trim().toLowerCase();
+  if (!raw) return [];
+
+  // Parse natural budget expressions like: "under 800k", "500k", "700,000", "< 600k", "below 1m"
+  let maxBudget: number | null = null;
+  let minBudget: number | null = null;
+
+  const kMatch = raw.match(/(?:under|below|less than|max|<=?)\s*(\d+(?:\.\d+)?)\s*k\b/i) ||
+                 raw.match(/(\d+(?:\.\d+)?)\s*k\b/i);
+  if (kMatch) {
+    maxBudget = parseFloat(kMatch[1]) * 1000;
+  }
+
+  const mMatch = raw.match(/(?:under|below|less than|max|<=?)\s*(\d+(?:\.\d+)?)\s*m\b/i);
+  if (mMatch) {
+    maxBudget = parseFloat(mMatch[1]) * 1000000;
+  }
+
+  const numMatch = raw.match(/(?:under|below|less than|max|<=?)\s*(?:₦|n)?\s*(\d{3,}(?:,\d{3})*)/i);
+  if (numMatch && !maxBudget) {
+    maxBudget = parseInt(numMatch[1].replace(/,/g, ""), 10);
+  }
+
+  // Filter out the budget phrase from keyword search if present
+  const cleanedKeywords = raw
+    .replace(/(?:under|below|less than|max|<=?|cheap|budget|around|about)\s*/gi, "")
+    .replace(/(\d+(?:\.\d+)?)\s*[km]\b/gi, "")
+    .replace(/(?:₦|n)?\s*\d{3,}(?:,\d{3})*/gi, "")
+    .trim();
+
   return products.filter((product) => {
+    // Check budget constraint against product variants
+    if (maxBudget !== null) {
+      const minProductPrice = fromPrice(product);
+      if (minProductPrice > maxBudget) return false;
+    }
+    if (minBudget !== null) {
+      const maxProductPrice = Math.max(...product.variants.map((v) => v.price));
+      if (maxProductPrice < minBudget) return false;
+    }
+
+    if (!cleanedKeywords) return true;
+
     const category = categoryById(product.category)?.name ?? "";
-    return [product.name, product.brand, category, product.description]
+    const haystack = [product.name, product.brand, category, product.description]
       .join(" ")
-      .toLowerCase()
-      .includes(q);
+      .toLowerCase();
+
+    return haystack.includes(cleanedKeywords);
   });
 }
 
@@ -1700,23 +1741,49 @@ function priceBand(variant: Variant, price?: string) {
 }
 
 export function shopResults(query: ShopQuery) {
-  const q = query.q?.trim().toLowerCase() ?? "";
+  const rawQ = query.q?.trim().toLowerCase() ?? "";
   const rows: { product: Product; variant: Variant }[] = [];
+
+  // Parse natural budget expressions from query string
+  let queryMaxBudget: number | null = null;
+  if (rawQ) {
+    const kMatch = rawQ.match(/(?:under|below|less than|max|<=?)\s*(\d+(?:\.\d+)?)\s*k\b/i) ||
+                   rawQ.match(/(\d+(?:\.\d+)?)\s*k\b/i);
+    if (kMatch) queryMaxBudget = parseFloat(kMatch[1]) * 1000;
+
+    const mMatch = rawQ.match(/(?:under|below|less than|max|<=?)\s*(\d+(?:\.\d+)?)\s*m\b/i);
+    if (mMatch) queryMaxBudget = parseFloat(mMatch[1]) * 1000000;
+
+    const numMatch = rawQ.match(/(?:under|below|less than|max|<=?)\s*(?:₦|n)?\s*(\d{3,}(?:,\d{3})*)/i);
+    if (numMatch && !queryMaxBudget) {
+      queryMaxBudget = parseInt(numMatch[1].replace(/,/g, ""), 10);
+    }
+  }
+
+  const cleanedQ = rawQ
+    .replace(/(?:under|below|less than|max|<=?|cheap|budget|around|about)\s*/gi, "")
+    .replace(/(\d+(?:\.\d+)?)\s*[km]\b/gi, "")
+    .replace(/(?:₦|n)?\s*\d{3,}(?:,\d{3})*/gi, "")
+    .trim();
 
   for (const product of products) {
     if (query.category && product.category !== query.category) continue;
     if (query.brand && product.brand !== query.brand) continue;
-    if (q) {
+
+    if (cleanedQ) {
       const category = categoryById(product.category)?.name ?? "";
-      const haystack = [product.name, product.brand, category].join(" ").toLowerCase();
-      if (!haystack.includes(q)) continue;
+      const haystack = [product.name, product.brand, category, product.description].join(" ").toLowerCase();
+      if (!haystack.includes(cleanedQ)) continue;
     }
+
     const matches = product.variants.filter((variant) => {
       if (query.condition && variant.condition !== query.condition) return false;
       if (query.storage && variant.storage !== query.storage) return false;
       if (query.deals && !variant.deal) return false;
+      if (queryMaxBudget !== null && variant.price > queryMaxBudget) return false;
       return priceBand(variant, query.price);
     });
+
     if (matches.length === 0) continue;
     const pricedRows = [...matches].sort((a, b) => a.price - b.price);
     const variant = pricedRows.find((item) => item.stock > 0) ?? pricedRows[0];
