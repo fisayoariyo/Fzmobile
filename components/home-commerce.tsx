@@ -1,5 +1,6 @@
 "use client";
 
+import { FullStoreShowroom } from "@/components/full-store-showroom";
 import { ProductCard } from "@/components/product-card";
 import { ProductMedia } from "@/components/product-media";
 import { SearchPill } from "@/components/search-pill";
@@ -130,52 +131,7 @@ export function HomeCommerce() {
       {/* 3D Interactive Showroom View */}
       {viewMode === "3d" && (
         <section className="mt-4 animate-scale-up">
-          <StoreShowroom3D
-            featured={topPicks}
-            selectedIndex={selectedShowroomIndex}
-            onSelectProduct={(idx) => setSelectedShowroomIndex(idx)}
-          />
-
-          {/* Quick Inspector Strip for the Selected 3D Phone */}
-          {topPicks[selectedShowroomIndex] && (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#dadce0] bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-[#f8f9fa] p-1">
-                  <ProductMedia
-                    art={topPicks[selectedShowroomIndex].product.art}
-                    color={topPicks[selectedShowroomIndex].variant.colorHex}
-                    image={productImage(
-                      topPicks[selectedShowroomIndex].product.image,
-                      topPicks[selectedShowroomIndex].variant.image
-                    )}
-                    alt={topPicks[selectedShowroomIndex].product.name}
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-[#202124]">
-                    {topPicks[selectedShowroomIndex].product.name}
-                  </h3>
-                  <p className="text-xs text-[#5f6368]">
-                    {topPicks[selectedShowroomIndex].variant.colorName} ·{" "}
-                    {topPicks[selectedShowroomIndex].variant.storage}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <span className="text-base font-semibold tabular-nums text-[#202124]">
-                  {naira(topPicks[selectedShowroomIndex].variant.price)}
-                </span>
-                <Link
-                  href={`/product/${topPicks[selectedShowroomIndex].product.slug}?v=${topPicks[selectedShowroomIndex].variant.id}`}
-                  className="rounded-full bg-[#1a73e8] px-5 py-2 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#1557b0]"
-                >
-                  Inspect & Buy →
-                </Link>
-              </div>
-            </div>
-          )}
+          <FullStoreShowroom featured={topPicks} />
         </section>
       )}
 
