@@ -65,152 +65,88 @@ export function HomeCommerce() {
     hero?.variants[0];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-24 pt-3 sm:px-6 md:pb-16 md:pt-6">
-      {/* Mobile Header */}
-      <header className="flex items-center justify-between gap-3 md:hidden">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#e8f0fe] text-xs font-bold text-[#1a73e8]">
-            FZ
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-[#202124]">FZ Mobile</p>
-            <p className="truncate text-xs text-[#5f6368]">Official Store Nigeria</p>
+    <div>
+      {/* Desktop Full-Bleed 3D Showroom Hero */}
+      <div className="hidden md:block">
+        <FullStoreShowroom featured={topPicks} />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-3 sm:px-6 md:pb-16 md:pt-10">
+        {/* Mobile Header */}
+        <header className="flex items-center justify-between gap-3 md:hidden">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#e8f0fe] text-xs font-bold text-[#1a73e8]">
+              FZ
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-[#202124]">FZ Mobile</p>
+              <p className="truncate text-xs text-[#5f6368]">Official Store Nigeria</p>
+            </div>
           </div>
-        </div>
-        <Link
-          href="/track"
-          className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-[#ffffff] text-[#5f6368] transition-colors hover:bg-[#f8f9fa]"
-          aria-label="Order updates"
-        >
-          <Bell className="size-4.5" />
-          {count > 0 && (
-            <span className="absolute right-2 top-2 size-2 rounded-full bg-[#1a73e8]" />
-          )}
-        </Link>
-      </header>
-
-      {/* Search pill on mobile */}
-      <div className="mt-3 md:hidden">
-        <SearchPill />
-      </div>
-
-      {/* Mode Switcher: 3D Showroom vs Classic Store */}
-      <div className="mt-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 rounded-full border border-[#dadce0] bg-[#f8f9fa] p-1 shadow-xs">
-          <button
-            type="button"
-            onClick={() => setViewMode("3d")}
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
-              viewMode === "3d"
-                ? "bg-[#1a73e8] text-white shadow-xs"
-                : "text-[#5f6368] hover:text-[#202124]"
-            }`}
+          <Link
+            href="/track"
+            className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#dadce0] bg-[#ffffff] text-[#5f6368] transition-colors hover:bg-[#f8f9fa]"
+            aria-label="Order updates"
           >
-            <Sparkles className="size-3.5" />
-            <span>3D Showroom</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("classic")}
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
-              viewMode === "classic"
-                ? "bg-[#1a73e8] text-white shadow-xs"
-                : "text-[#5f6368] hover:text-[#202124]"
-            }`}
-          >
-            <Store className="size-3.5" />
-            <span>Standard Store</span>
-          </button>
+            <Bell className="size-4.5" />
+            {count > 0 && (
+              <span className="absolute right-2 top-2 size-2 rounded-full bg-[#1a73e8]" />
+            )}
+          </Link>
+        </header>
+
+        {/* Mobile Search Input */}
+        <div className="mt-3 md:hidden">
+          <SearchPill />
         </div>
 
-        <span className="hidden text-xs text-[#5f6368] sm:inline">
-          Interactive WebGL Flagship Store
-        </span>
-      </div>
-
-      {/* 3D Interactive Showroom View */}
-      {viewMode === "3d" && (
-        <section className="mt-4 animate-scale-up">
-          <FullStoreShowroom featured={topPicks} />
-        </section>
-      )}
-
-      {/* Classic Editorial Hero Section */}
-      {viewMode === "classic" && hero && heroVariant && (
-        <section className="relative mt-4 md:mt-0 rounded-3xl bg-[#f8fafd] border border-[#e3edf7] p-8 md:p-12 lg:p-16 overflow-hidden animate-scale-up">
-          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12">
-            <div className="relative z-10 max-w-xl">
-              <span className="inline-block text-[#1a73e8] font-semibold text-xs tracking-wider uppercase mb-2">
+        {/* Mobile Storefront Hero (Clean, fast, non-cluttered) */}
+        {hero && heroVariant && (
+          <section className="relative mt-4 rounded-3xl border border-[#e3edf7] bg-[#f8fafd] p-6 overflow-hidden md:hidden">
+            <div className="relative z-10">
+              <span className="inline-block text-[#1a73e8] font-semibold text-xs tracking-wider uppercase mb-1">
                 FZ Mobile Store
               </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-[#202124] leading-[1.1]">
+              <h1 className="text-3xl font-semibold tracking-tight text-[#202124] leading-tight">
                 Discover devices made to inspire.
               </h1>
-              <p className="text-base md:text-lg text-[#5f6368] max-w-lg mt-4 font-normal leading-relaxed">
-                Experience premium phones, tablets, and audio with authentic manufacturer warranties and nationwide delivery.
+              <p className="mt-2 text-sm text-[#5f6368]">
+                Authentic manufacturer warranties with fast nationwide delivery.
               </p>
-              <div className="mt-6 max-w-lg">
-                <SearchPill variant="hero" />
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium text-[#5f6368]">Quick find:</span>
-                  <Link
-                    href="/shop?q=under%20500k"
-                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
-                  >
-                    Under ₦500k
-                  </Link>
-                  <Link
-                    href="/shop?q=under%20800k"
-                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
-                  >
-                    Under ₦800k
-                  </Link>
-                  <Link
-                    href="/shop?q=iphone"
-                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
-                  >
-                    iPhones
-                  </Link>
-                  <Link
-                    href="/shop?q=pixel"
-                    className="rounded-full bg-white border border-[#dadce0] hover:border-[#1a73e8] hover:text-[#1a73e8] px-3 py-1 text-xs font-medium text-[#3c4043] transition-colors shadow-xs"
-                  >
-                    Pixels
-                  </Link>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Link
-                  href="/shop?category=phones"
-                  className="rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white px-6 py-2.5 text-xs font-medium transition-all shadow-sm"
+                  href="/shop?q=under%20500k"
+                  className="rounded-full bg-white border border-[#dadce0] px-3 py-1 text-xs font-medium text-[#3c4043]"
                 >
-                  Browse all phones
+                  Under ₦500k
                 </Link>
                 <Link
-                  href="/shop?deals=1"
-                  className="rounded-full border border-[#dadce0] hover:bg-black/[0.03] text-[#1a73e8] px-6 py-2.5 text-xs font-medium transition-all"
+                  href="/shop?q=under%20800k"
+                  className="rounded-full bg-white border border-[#dadce0] px-3 py-1 text-xs font-medium text-[#3c4043]"
                 >
-                  Explore deals
+                  Under ₦800k
+                </Link>
+                <Link
+                  href="/shop?q=iphone"
+                  className="rounded-full bg-white border border-[#dadce0] px-3 py-1 text-xs font-medium text-[#3c4043]"
+                >
+                  iPhones
                 </Link>
               </div>
             </div>
-
-            <div className="relative z-10 flex h-64 items-center justify-center sm:h-80 md:h-96">
-              <div className="relative h-full w-full max-w-sm transition-transform duration-500 hover:scale-105">
-                <ProductMedia
-                  art={hero.art}
-                  color={heroVariant.colorHex}
-                  image={productImage(hero.image, heroVariant.image)}
-                  alt={hero.name}
-                  className="h-full w-full object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.12)]"
-                  priority
-                />
-              </div>
+            <div className="mt-4 flex h-48 items-center justify-center">
+              <ProductMedia
+                art={hero.art}
+                color={heroVariant.colorHex}
+                image={productImage(hero.image, heroVariant.image)}
+                alt={hero.name}
+                className="h-full w-full object-contain"
+                priority
+              />
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
+
 
       {/* Category Bar (Material 3 Segmented Pills) */}
       <section className="mt-8">
@@ -308,6 +244,7 @@ export function HomeCommerce() {
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 }

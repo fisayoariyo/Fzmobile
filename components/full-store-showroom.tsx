@@ -79,24 +79,6 @@ export function FullStoreShowroom({
         {/* Ambient Dark Vignette & Overhead LED Spotlight Bleed */}
         <div className="pointer-events-none absolute inset-0 bg-radial-[at_50%_40%] from-transparent via-black/25 to-black/80" />
 
-        {/* Subtle Top Navigation HUD inside the 3D space */}
-        <div className="absolute left-4 right-4 top-4 z-20 flex items-center justify-between sm:left-8 sm:right-8 sm:top-6">
-          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-4 py-2 backdrop-blur-md">
-            <span className="size-2.5 animate-pulse rounded-full bg-[#1a73e8]" />
-            <span className="text-xs font-semibold tracking-wide text-white">
-              FLAGSHIP SHOWROOM · LAGOS
-            </span>
-          </div>
-
-          <Link
-            href="/shop"
-            className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black"
-          >
-            <Store className="size-3.5" />
-            <span>Classic Shop View</span>
-          </Link>
-        </div>
-
         {/* Interactive Hotspot Pins on the Display Tables */}
         {hotspots.map((spot, i) => {
           const item = featured[i];
@@ -150,13 +132,6 @@ export function FullStoreShowroom({
           );
         })}
 
-        {/* Ambient Prompt in Center-Bottom */}
-        <div className="pointer-events-none absolute bottom-32 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/10 bg-black/40 px-4 py-1.5 backdrop-blur-md">
-          <p className="flex items-center gap-2 text-xs text-white/70">
-            <Eye className="size-3.5 text-[#1a73e8]" />
-            <span>Tap any phone on the table to inspect specs & buy</span>
-          </p>
-        </div>
       </div>
 
       {/* Floating Glassmorphic Device Inspector Deck (Bottom Overlay) */}
