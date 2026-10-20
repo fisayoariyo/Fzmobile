@@ -1,43 +1,82 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-display: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  /* next/font/google exposes the loaded face as --font-jakarta on <html>.
+     Do NOT write `var(--font-sans)` on the left of another `--font-sans`
+     definition — that is a self-reference, which is invalid and silently
+     dropped, leaving the browser on system-ui. Reference the next/font
+     variable by its own name instead. */
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
 
-  /* Core surfaces & text */
-  --color-ink: #202124;
-  --color-muted: #5f6368;
-  --color-faint: #70757a;
-  --color-line: #dadce0;
-  --color-surface: #f8f9fa;
-  --color-hover: #f1f3f4;
+  /* ── Apple design tokens (measured from apple.com/iphone computed styles) ── */
+  --color-apple-ink: #1d1d1f;        /* primary text */
+  --color-apple-muted: #6e6e73;      /* secondary text */
+  --color-apple-band: #f5f5f7;       /* alternating section band */
+  --color-apple-line: #d2d2d7;       /* hairline dividers */
+  --color-apple-link: #0066cc;       /* in-text / "Learn more" link */
+  --color-apple-link-hover: #0077ed;
+  --color-apple-button: #0071e3;     /* filled button fill */
+  --color-apple-button-hover: #0077ed;
+  --color-apple-dark: #1d1d1f;       /* dark section background */
+  --color-apple-dark-band: #000000;
+
+  /* Core surfaces & text (legacy names kept so untouched pages still compile) */
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-faint: #86868b;
+  --color-line: #d2d2d7;
+  --color-surface: #f5f5f7;
+  --color-hover: #f5f5f7;
 
   /* Brand */
-  --color-brand: #1a73e8;
-  --color-brand-ink: #001d35;
-  --color-brand-strong: #1557b0;
-  --color-brand-soft: #e8f0fe;
-  --color-pill: #c2e7ff;
+  --color-brand: #0066cc;
+  --color-brand-ink: #1d1d1f;
+  --color-brand-strong: #0071e3;
+  --color-brand-soft: #f5f5f7;
+  --color-pill: #f5f5f7;
 
   /* Semantic */
-  --color-good: #137333;
-  --color-good-soft: #e6f4ea;
-  --color-deal: #b3261e;
+  --color-good: #1d7a3f;
+  --color-good-soft: #f0f7f2;
+  --color-deal: #bf4800;
 
   /* Layout */
   --spacing-gutter: 1rem;
-  --container-store: 1200px;
+  --container-store: 980px;   /* Apple's text/content column */
+  --container-wide: 1440px;   /* Apple's full-bleed grid */
 }
 
-/* One shared grid so header, page body and footer align on the same edges. */
+/* Apple's narrow content column: centred text and single-product blocks. */
 @utility store-container {
   margin-inline: auto;
   width: 100%;
-  max-width: 1200px;
-  padding-inline: 1rem;
+  max-width: 980px;
+  padding-inline: 1.375rem;
 
   @media (min-width: 768px) {
-    padding-inline: 1.5rem;
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Apple's wider grid used by tile rows and the compare table. */
+@utility store-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1440px;
+  padding-inline: 1.375rem;
+
+  @media (min-width: 768px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Vertical rhythm for a full-bleed Apple section. */
+@utility apple-section {
+  padding-block: 5rem;
+
+  @media (min-width: 768px) {
+    padding-block: 6.5rem;
   }
 }
 
@@ -56,12 +95,129 @@ html {
 
 body {
   background: #ffffff;
-  color: #202124;
+  color: #1d1d1f;
+  font-size: 17px;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: #c2e7ff;
-  color: #001d35;
+  background: #d2d2d7;
+  color: #1d1d1f;
+}
+
+/* ── Apple type scale ─────────────────────────────────────────────────────
+   Headlines are tight and semibold; body is 17px. Tracking is negative. */
+.type-hero {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #1d1d1f;
+}
+
+.type-headline {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08349;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: #1d1d1f;
+}
+
+.type-title {
+  font-size: 1.5rem;
+  line-height: 1.16667;
+  font-weight: 600;
+  letter-spacing: -0.009em;
+  color: #1d1d1f;
+}
+
+.type-body {
+  font-size: 1.0625rem;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  color: #1d1d1f;
+}
+
+.type-caption {
+  font-size: 0.75rem;
+  line-height: 1.33337;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #6e6e73;
+}
+
+/* Apple's blue pill button. */
+.apple-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 980px;
+  background: #0071e3;
+  color: #ffffff;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  padding: 0.75rem 1.375rem;
+  transition: background-color 0.2s ease;
+}
+
+.apple-button:hover {
+  background: #0077ed;
+}
+
+/* Secondary variant: blue text on a faint fill. */
+.apple-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 980px;
+  background: #f5f5f7;
+  color: #0066cc;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  padding: 0.75rem 1.375rem;
+  transition: background-color 0.2s ease;
+}
+
+.apple-button-secondary:hover {
+  background: #e8e8ed;
+}
+
+/* Outlined variant for dark sections. */
+.apple-button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 980px;
+  border: 1px solid #d2d2d7;
+  color: #0066cc;
+  font-size: 1.0625rem;
+  letter-spacing: -0.022em;
+  padding: 0.75rem 1.375rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.apple-button-outline:hover {
+  background: #f5f5f7;
+  border-color: #86868b;
+}
+
+/* Apple's inline text link. */
+.apple-link {
+  color: #0066cc;
+  transition: color 0.2s ease;
+}
+
+.apple-link:hover {
+  color: #0077ed;
+  text-decoration: underline;
 }
 
 .scroll-row {

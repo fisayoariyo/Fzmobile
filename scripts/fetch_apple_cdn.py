@@ -61,10 +61,12 @@ APPLE_ASSETS: dict[str, list[str]] = {
     "iphone-12-pro.jpg": ["iphone-12-pro-graphite-hero"],
     "iphone-12-pro-max.jpg": ["iphone-12-pro-max-graphite-hero"],
     "iphone-11.jpg": ["iphone11-black-select-2019"],
-    "iphone-air.jpg": ["iphone-16-finish-select-202409-6-1inch-ultramarine"],
-    "iphone-17.jpg": ["iphone-16-finish-select-202409-6-1inch-ultramarine"],
-    "iphone-17-pro.jpg": ["iphone-16-pro-finish-select-202409-6-3inch-naturaltitanium"],
-    "iphone-17-pro-max.jpg": ["iphone-16-pro-finish-select-202409-6-9inch-naturaltitanium"],
+    # Verified against Apple's buy-iphone manifest. Note the real lineup has no
+    # plain "iPhone 17 Pro Max" — the 6.9" flagship is the iPhone 18 Pro.
+    "iphone-air.jpg": ["iphone-air-finish-select-skyblue-202509"],
+    "iphone-17.jpg": ["iphone-17-finish-select-lavender-202509"],
+    "iphone-17-pro.jpg": ["iphone-17-pro-finish-select-202509-6-3inch-cosmicorange"],
+    "iphone-17-pro-max.jpg": ["iphone-18-pro-finish-select-burgundy-202609"],
     "airpods-pro.jpg": ["MQD83"],
     "ipad-10.jpg": ["ipad-10th-gen-finish-select-202212-blue-wifi"],
     "ipad-11.jpg": ["ipad-air-finish-select-gallery-202405-11inch-blue-wifi"],

@@ -31,7 +31,7 @@ const theme = createTheme({
     divider: "rgba(0,0,0,0.12)",
   },
   typography: {
-    fontFamily: "var(--font-lato), Lato, sans-serif",
+    fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif",
     button: {
       textTransform: "none",
       fontWeight: 700,

@@ -1,370 +1,328 @@
 "use client";
 
-import { CategoryRail } from "@/components/category-rail";
-import { ConditionGuide } from "@/components/condition-guide";
-import { ProductCard } from "@/components/product-card";
 import { ProductMedia } from "@/components/product-media";
-import { StoreSearch } from "@/components/store-search";
-import { conditionMeta, flashDeals, getProduct, products } from "@/lib/catalog";
+import { Section, SectionIntro, TileRow, TileRowItem } from "@/components/apple-ui";
+import { CATEGORIES, flashDeals, fromPrice, getProduct, products } from "@/lib/catalog";
 import { naira } from "@/lib/format";
 import { productImage } from "@/lib/media";
 import { whatsappHref } from "@/lib/site";
 import type { Product, Variant } from "@/lib/types";
-import {
-  ArrowRight,
-  BadgeCheck,
-  ShieldCheck,
-  Truck,
-  Wallet,
-} from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-const budgets = [
-  { href: "/shop?q=under%20500k", label: "Under ₦500k", note: "Everyday devices" },
-  { href: "/shop?q=under%20800k", label: "₦500k – ₦800k", note: "Mid-range flagships" },
-  { href: "/shop?q=under%201m", label: "₦800k – ₦1m", note: "Upper mid-range" },
-  { href: "/shop?category=phones&sort=price-desc", label: "₦1m and above", note: "Latest flagships" },
-] as const;
+/**
+ * Landing page rebuilt on Apple's information architecture.
+ *
+ * apple.com leads with one oversized hero product, then a strip of product
+ * tiles, then alternating full-bleed bands, then a large dark band, then the
+ * dense link footer. Prices here stay visible because the store sells finite
+ * stock over bank transfer.
+ */
 
-const trust = [
-  {
-    icon: ShieldCheck,
-    title: "12-month warranty",
-    body: "Grade-by-grade terms, stated up front.",
-    tone: "brand" as const,
-  },
-  {
-    icon: BadgeCheck,
-    title: "Verified inspection",
-    body: "Multi-point check on every unit.",
-    tone: "good" as const,
-  },
-  {
-    icon: Truck,
-    title: "Nationwide delivery",
-    body: "Lagos same-day, interstate 1–3 days.",
-    tone: "brand" as const,
-  },
-  {
-    icon: Wallet,
-    title: "Bank transfer",
-    body: "Receipt verified before dispatch.",
-    tone: "good" as const,
-  },
-];
+type Row = { product: Product; variant: Variant };
 
-function SectionHeading({
-  eyebrow,
-  title,
-  href,
-  action,
-}: {
-  eyebrow?: string;
-  title: string;
-  href?: string;
-  action?: string;
-}) {
+function bestVariant(product: Product): Variant | undefined {
+  const inStock = product.variants.filter((v) => v.stock > 0);
+  const pool = inStock.length > 0 ? inStock : product.variants;
+  return [...pool].sort((a, b) => a.price - b.price)[0];
+}
+
+function rowsFor(predicate: (p: Product) => boolean, limit: number): Row[] {
+  return products
+    .filter(predicate)
+    .map((product) => {
+      const variant = bestVariant(product);
+      return variant ? { product, variant } : null;
+    })
+    .filter((row): row is Row => row !== null)
+    .sort((a, b) => b.product.createdAt.localeCompare(a.product.createdAt))
+    .slice(0, limit);
+}
+
+function TileMedia({ product, variant, priority }: { product: Product; variant: Variant; priority?: boolean }) {
   return (
-    <div className="flex items-end justify-between gap-4 border-b border-line pb-3">
-      <div>
-        {eyebrow && (
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-faint">
-            {eyebrow}
-          </p>
-        )}
-        <h2 className="text-lg font-semibold text-ink md:text-xl">{title}</h2>
-      </div>
-      {href && (
-        <Link
-          href={href}
-          className="shrink-0 text-sm font-medium text-brand hover:underline"
-        >
-          {action ?? "See all"} →
-        </Link>
-      )}
+    <div className="relative h-full w-full">
+      <ProductMedia
+        art={product.art}
+        color={variant.colorHex}
+        image={productImage(product.image, variant.image)}
+        alt={product.name}
+        priority={priority}
+        className="h-full w-full"
+      />
     </div>
   );
 }
 
 export function HomeCommerce() {
-  const [tab, setTab] = useState<"top" | "new">("top");
-
   const deals = useMemo(() => flashDeals(), []);
-  const topPicks = deals.slice(0, 8);
-  const newArrivals = useMemo(() => {
-    const rows: { product: Product; variant: Variant }[] = [];
-    const sorted = [...products].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    for (const product of sorted) {
-      const variant =
-        product.variants.find((item) => item.stock > 0) ?? product.variants[0];
-      if (!variant) continue;
-      rows.push({ product, variant });
-      if (rows.length >= 8) break;
-    }
-    return rows;
-  }, []);
-
-  const grid = tab === "top" ? topPicks : newArrivals;
 
   const hero = getProduct("iphone-16") ?? getProduct("iphone-15") ?? deals[0]?.product;
-  const heroVariant =
-    hero?.variants.find((item) => item.stock > 0 && item.deal) ??
-    hero?.variants.find((item) => item.stock > 0) ??
-    hero?.variants[0];
+  const heroVariant = hero ? bestVariant(hero) : undefined;
 
-  const dealStrip = deals.slice(0, 6);
+  const latest = useMemo(() => rowsFor((p) => p.category === "phones", 4), []);
+  const computing = useMemo(() => rowsFor((p) => p.category === "laptops", 3), []);
+  const audio = useMemo(() => rowsFor((p) => p.category === "audio", 3), []);
+  const featured = deals.slice(0, 4);
 
   return (
     <div className="tab-safe">
-      {/* Hero — one layout for every breakpoint */}
-      <section className="border-b border-line bg-surface">
-        <div className="store-container grid gap-8 py-10 md:grid-cols-2 md:items-center md:gap-12 md:py-16">
-          <div className="animate-rise">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">
-              <BadgeCheck className="size-3.5" />
-              Fzmobile · Official Store Nigeria
-            </span>
-
-            <h1 className="mt-4 text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-4xl md:text-5xl">
-              Every device, exactly as described.
-            </h1>
-
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted md:text-base">
-              Exact colour, storage, condition and battery health on every listing.
-              Authentic stock, honest grades, prices in Naira.
+      {/* ── Hero: one product, oversized, on the light band ───────────── */}
+      {hero && heroVariant && (
+        <section className="bg-apple-band pb-16 pt-14 text-center md:pb-20 md:pt-16">
+          <div className="store-container">
+            <p className="type-caption uppercase tracking-wider">New</p>
+            <h1 className="type-hero mt-3">{hero.name}</h1>
+            <p className="type-body mx-auto mt-4 max-w-[520px] text-apple-muted">
+              {heroVariant.colorName} · {heroVariant.storage} — authentic stock with exact
+              condition and battery health stated up front.
             </p>
 
-            <div className="mt-6 max-w-xl">
-              <StoreSearch autoComplete />
+            <p className="mt-6 text-[19px] tracking-[-0.012em] text-apple-muted">
+              From <span className="font-semibold text-apple-ink">{naira(fromPrice(hero))}</span>
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <Link href={`/product/${hero.slug}?v=${heroVariant.id}`} className="apple-button">
+                Buy
+              </Link>
+              <Link href={`/product/${hero.slug}?v=${heroVariant.id}`} className="apple-link text-[17px]">
+                Learn more <span aria-hidden>›</span>
+              </Link>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              {budgets.map((budget) => (
-                <Link
-                  key={budget.href}
-                  href={budget.href}
-                  className="rounded-full border border-line bg-white px-3.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-brand hover:bg-brand-soft hover:text-brand"
-                >
-                  {budget.label}
-                </Link>
-              ))}
+            <div className="mx-auto mt-12 h-[280px] w-full max-w-[620px] md:h-[420px]">
+              <TileMedia product={hero} variant={heroVariant} priority />
             </div>
-          </div>
-
-          {hero && heroVariant && (
-            <div className="animate-rise-delayed">
-              <div className="relative overflow-hidden rounded-3xl border border-line bg-white p-6 shadow-xs md:p-8">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">
-                      Featured this week
-                    </p>
-                    <p className="mt-0.5 truncate text-base font-semibold text-ink">
-                      {hero.name}
-                    </p>
-                    <p className="truncate text-xs text-muted">
-                      {heroVariant.colorName} · {heroVariant.storage}
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium text-muted">
-                    {conditionMeta[heroVariant.condition].label}
-                  </span>
-                </div>
-
-                <div className="relative mx-auto mt-4 flex h-52 items-center justify-center md:h-64">
-                  <ProductMedia
-                    art={hero.art}
-                    color={heroVariant.colorHex}
-                    image={productImage(hero.image, heroVariant.image)}
-                    alt={hero.name}
-                    className="h-full w-full object-contain"
-                    priority
-                  />
-                </div>
-
-                <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-4">
-                  <div>
-                    <p className="text-[11px] text-faint">From</p>
-                    <p className="text-xl font-bold text-ink tabular-nums">
-                      {naira(heroVariant.price)}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/product/${hero.slug}?v=${heroVariant.id}`}
-                    className="inline-flex h-11 items-center gap-1.5 rounded-full bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-strong"
-                  >
-                    View device
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="store-container pb-16 pt-10 md:pb-20">
-        {/* Categories */}
-        <section>
-          <SectionHeading
-            eyebrow="Browse"
-            title="Shop by category"
-            href="/shop"
-            action="All tech"
-          />
-          <div className="mt-5">
-            <CategoryRail />
           </div>
         </section>
+      )}
 
-        {/* Trust */}
-        <section className="mt-10 rounded-3xl border border-line bg-white p-5 md:p-6">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
-            {trust.map((item) => (
-              <div key={item.title} className="flex items-start gap-3">
-                <span
-                  className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
-                    item.tone === "good"
-                      ? "bg-good-soft text-good"
-                      : "bg-brand-soft text-brand"
-                  }`}
-                >
-                  <item.icon className="size-5" />
+      {/* ── Product strip: the latest devices in a snap-scrolling row ──── */}
+      <Section band="light">
+        <SectionIntro
+          headline="The latest. Take a look at what's new."
+          subhead="Every device is verified before it ships. Exact colour, storage and grade on every listing."
+        />
+        <div className="mt-12">
+          <TileRow>
+            {latest.map(({ product, variant }) => (
+              <TileRowItem key={product.slug} width="w-[300px]">
+                <Link href={`/product/${product.slug}?v=${variant.id}`} className="group block">
+                  <div className="h-[240px] w-full">
+                    <TileMedia product={product} variant={variant} />
+                  </div>
+                  <p className="type-caption mt-5 uppercase tracking-wider">New</p>
+                  <h3 className="mt-1 text-[21px] font-semibold leading-[1.19048] tracking-[-0.011em] text-apple-ink">
+                    {product.name}
+                  </h3>
+                  <p className="mt-1.5 text-[14px] tracking-[-0.016em] text-apple-muted">
+                    From {naira(fromPrice(product))}
+                  </p>
+                  <span className="apple-link mt-3 inline-block text-[14px]">
+                    Buy <span aria-hidden>›</span>
+                  </span>
+                </Link>
+              </TileRowItem>
+            ))}
+          </TileRow>
+        </div>
+      </Section>
+
+      {/* ── Category bands: one full-bleed band per area ───────────────── */}
+      <Section band="band">
+        <SectionIntro
+          headline="Explore the store."
+          subhead="Six areas, every listing showing the exact colour, storage and condition."
+        />
+
+        <div className="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          {CATEGORIES.map((category) => {
+            const rows = rowsFor((p) => p.category === category.id, 1);
+            const top = rows[0];
+            return (
+              <Link
+                key={category.id}
+                href={`/shop?category=${category.id}`}
+                className="group flex flex-col items-center rounded-[18px] bg-white px-6 py-8 text-center transition-transform duration-300 hover:-translate-y-1"
+              >
+                {top ? (
+                  <div className="h-[180px] w-full">
+                    <TileMedia product={top.product} variant={top.variant} />
+                  </div>
+                ) : (
+                  <div className="h-[180px] w-full" />
+                )}
+                <h3 className="mt-6 text-[21px] font-semibold leading-[1.19048] tracking-[-0.011em] text-apple-ink">
+                  {category.label}
+                </h3>
+                <p className="mt-1.5 text-[14px] tracking-[-0.016em] text-apple-muted">
+                  {category.name}
+                </p>
+                <span className="apple-link mt-4 text-[14px]">
+                  Shop {category.label.toLowerCase()} <span aria-hidden>›</span>
                 </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink">{item.title}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-muted">{item.body}</p>
-                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* ── Two-up feature: computing and audio ────────────────────────── */}
+      <Section band="light" wide>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {[
+            { title: "Mac and laptops", rows: computing, href: "/shop?category=laptops" },
+            { title: "Sound that carries", rows: audio, href: "/shop?category=audio" },
+          ].map((block) => (
+            <div key={block.title} className="rounded-[18px] bg-apple-band px-6 py-12 text-center">
+              <h2 className="type-title">{block.title}</h2>
+              <div className="mt-8 grid grid-cols-3 gap-4">
+                {block.rows.map(({ product, variant }) => (
+                  <Link
+                    key={product.slug}
+                    href={`/product/${product.slug}?v=${variant.id}`}
+                    className="group block"
+                  >
+                    <div className="h-[130px] w-full">
+                      <TileMedia product={product} variant={variant} />
+                    </div>
+                    <p className="mt-3 truncate text-[12px] font-semibold tracking-[-0.01em] text-apple-ink">
+                      {product.name}
+                    </p>
+                    <p className="mt-0.5 text-[12px] text-apple-muted">
+                      {naira(fromPrice(product))}
+                    </p>
+                  </Link>
+                ))}
               </div>
+              <Link href={block.href} className="apple-button-secondary mt-8 text-[14px]">
+                Shop all
+              </Link>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── Deals ──────────────────────────────────────────────────────── */}
+      {featured.length > 0 && (
+        <Section band="band">
+          <SectionIntro
+            headline="Going, going. Shop the deals."
+            subhead="Limited stock at reduced prices. Once it's gone, it's gone."
+          />
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map(({ product, variant }) => (
+              <Link
+                key={product.slug}
+                href={`/product/${product.slug}?v=${variant.id}`}
+                className="group flex flex-col items-center rounded-[18px] bg-white px-5 py-8 text-center transition-transform duration-300 hover:-translate-y-1"
+              >
+                <div className="h-[170px] w-full">
+                  <TileMedia product={product} variant={variant} />
+                </div>
+                <h3 className="mt-5 text-[17px] font-semibold tracking-[-0.022em] text-apple-ink">
+                  {product.name}
+                </h3>
+                <p className="mt-1 text-[14px] text-apple-muted">{variant.colorName}</p>
+                <p className="mt-3 text-[17px] font-semibold tracking-[-0.022em] text-apple-ink">
+                  {naira(variant.price)}
+                </p>
+                <span className="apple-link mt-3 text-[14px]">
+                  Buy <span aria-hidden>›</span>
+                </span>
+              </Link>
             ))}
           </div>
-        </section>
+        </Section>
+      )}
 
-        {/* Deals strip */}
-        {dealStrip.length > 0 && (
-          <section className="mt-12">
-            <SectionHeading
-              eyebrow="Limited stock"
-              title="Flash deals"
-              href="/shop?deals=1"
-              action="All deals"
-            />
-            <div className="scroll-row -mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0">
-              {dealStrip.map(({ product, variant }) => (
-                <div key={variant.id} className="w-40 shrink-0 md:w-48">
-                  <ProductCard product={product} variant={variant} />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Top picks / new arrivals */}
-        <section className="mt-12">
-          <div className="flex flex-col gap-4 border-b border-line pb-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-center gap-2">
-              {(["top", "new"] as const).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTab(key)}
-                  className={`cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                    tab === key
-                      ? "bg-pill text-brand-ink"
-                      : "border border-line text-muted hover:bg-surface"
-                  }`}
-                >
-                  {key === "top" ? "Top Picks" : "New Arrivals"}
-                </button>
-              ))}
-            </div>
-            <Link
-              href={tab === "top" ? "/shop?deals=1" : "/shop?sort=newest"}
-              className="text-sm font-medium text-brand hover:underline"
+      {/* ── Dark band: the support/why-us moment ───────────────────────── */}
+      <Section band="dark">
+        <div className="text-center">
+          <h2 className="type-headline text-white">Not sure which grade to pick?</h2>
+          <p className="mx-auto mt-4 max-w-[560px] text-[19px] leading-[1.42115] tracking-[-0.012em] text-white/70">
+            Send us your budget and what you need the device for. We&apos;ll tell you what we
+            actually have in stock — no upselling, no surprises.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={whatsappHref()}
+              target="_blank"
+              rel="noreferrer"
+              className="apple-button"
             >
-              {tab === "top" ? "All deals" : "All new"} →
+              Chat with a Specialist
+            </a>
+            <Link
+              href="/policies/warranty"
+              className="text-[17px] tracking-[-0.022em] text-apple-link hover:underline"
+            >
+              Compare grades <span aria-hidden>›</span>
             </Link>
           </div>
+        </div>
+      </Section>
 
-          {grid.length === 0 ? (
-            <p className="mt-6 text-sm text-muted">No devices in this list right now.</p>
-          ) : (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {grid.map(({ product, variant }) => (
-                <ProductCard
-                  key={`${tab}-${variant.id}`}
-                  product={product}
-                  variant={variant}
-                />
-              ))}
+      {/* ── Direct entry points: dense link block ──────────────────────── */}
+      <Section band="light">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+          {[
+            ...CATEGORIES.map((category) => ({
+              title: category.label,
+              links: [
+                { href: `/shop?category=${category.id}`, label: `All ${category.label.toLowerCase()}` },
+                {
+                  href: `/shop?category=${category.id}&condition=new_sealed`,
+                  label: "Brand new sealed",
+                },
+                {
+                  href: `/shop?category=${category.id}&condition=grade_a`,
+                  label: "Pre-owned Grade A",
+                },
+                {
+                  href: `/shop?category=${category.id}&condition=grade_b`,
+                  label: "Pre-owned Grade B",
+                },
+              ],
+            })),
+            {
+              title: "Shop by budget",
+              links: [
+                { href: "/shop?q=under%20500k", label: "Under ₦500k" },
+                { href: "/shop?q=under%20800k", label: "₦500k – ₦800k" },
+                { href: "/shop?q=under%201m", label: "₦800k – ₦1m" },
+                { href: "/shop?deals=1", label: "Flash deals" },
+              ],
+            },
+            {
+              title: "Support",
+              links: [
+                { href: "/track", label: "Track an order" },
+                { href: "/policies/warranty", label: "Warranty" },
+                { href: "/policies/returns", label: "Returns & refunds" },
+                { href: "/policies/delivery", label: "Delivery fees" },
+              ],
+            },
+          ].map((group) => (
+            <div key={group.title}>
+              <p className="type-caption mb-3 uppercase tracking-wider">{group.title}</p>
+              <ul className="space-y-2">
+                {group.links.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-[14px] tracking-[-0.016em] text-apple-muted transition-colors hover:text-apple-link"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          )}
-        </section>
-
-        {/* Shop by budget */}
-        <section className="mt-12">
-          <SectionHeading eyebrow="Find your range" title="Shop by budget" href="/shop" />
-          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {budgets.map((budget) => (
-              <Link
-                key={budget.href}
-                href={budget.href}
-                className="card-hover rounded-2xl border border-line bg-white p-4 transition-colors hover:border-brand"
-              >
-                <p className="text-sm font-semibold text-ink md:text-base">
-                  {budget.label}
-                </p>
-                <p className="mt-1 text-xs text-muted">{budget.note}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Condition guide */}
-        <section className="mt-12">
-          <SectionHeading
-            eyebrow="Know what you're buying"
-            title="Grades explained"
-            href="/policies/warranty"
-            action="Warranty terms"
-          />
-          <div className="mt-5">
-            <ConditionGuide />
-          </div>
-        </section>
-
-        {/* Support band */}
-        <section className="mt-12 overflow-hidden rounded-3xl border border-line bg-ink p-6 text-white md:p-10">
-          <div className="grid gap-6 md:grid-cols-[1.5fr_1fr] md:items-center">
-            <div>
-              <h2 className="text-xl font-semibold md:text-2xl">
-                Not sure which grade or storage to pick?
-              </h2>
-              <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/70">
-                Send us your budget and what you need the device for. We&apos;ll tell you
-                what we actually have in stock — no upselling, no surprises.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row md:justify-end">
-              <a
-                href={whatsappHref()}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-ink transition-colors hover:bg-white/90"
-              >
-                Chat on WhatsApp
-              </a>
-              <Link
-                href="/track"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/25 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                Track an order
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
+          ))}
+        </div>
+      </Section>
     </div>
   );
 }
